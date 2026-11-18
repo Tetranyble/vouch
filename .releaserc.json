@@ -1,0 +1,29 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "bash scripts/build-release-archive.sh ${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "dist/vouch-v*.zip",
+            "label": "Vouch deployable package"
+          },
+          {
+            "path": "dist/vouch-v*.zip.sha256",
+            "label": "SHA-256 checksum"
+          }
+        ]
+      }
+    ]
+  ]
+}

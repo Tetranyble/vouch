@@ -52,8 +52,52 @@ jobs:
           name: Run frontend quality checks
           command: npm run check
 
+  release:
+    docker:
+      - image: cimg/php:8.3-node
+    steps:
+      - checkout
+      - run:
+          name: Fetch release history and tags
+          command: git fetch --force --tags origin '+refs/heads/main:refs/remotes/origin/main'
+      - restore_cache:
+          keys:
+            - npm-v1-{{ checksum "package-lock.json" }}
+            - npm-v1-
+      - run:
+          name: Install release dependencies
+          command: npm ci --no-audit --no-fund
+      - run:
+          name: Verify GitHub release credentials
+          command: |
+            if [ -z "${GH_TOKEN:-}" ]; then
+              echo "Set GH_TOKEN in CircleCI project environment variables before enabling releases." >&2
+              exit 1
+            fi
+      - run:
+          name: Create semantic GitHub release
+          command: npx -p node@v24 -c "npm run release"
+      - store_artifacts:
+          path: dist
+          destination: releases
+
 workflows:
-  quality:
+  verify-and-release:
     jobs:
-      - php-tests
-      - frontend
+      - php-tests:
+          filters:
+            tags:
+              ignore: /.*/
+      - frontend:
+          filters:
+            tags:
+              ignore: /.*/
+      - release:
+          requires:
+            - php-tests
+            - frontend
+          filters:
+            branches:
+              only: main
+            tags:
+              ignore: /.*/
