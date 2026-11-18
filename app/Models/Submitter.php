@@ -62,10 +62,19 @@ class Submitter extends Model
 
     public function getStatusAttribute(): string
     {
-        if ($this->declined_at) return 'declined';
-        if ($this->completed_at) return 'completed';
-        if ($this->opened_at) return 'opened';
-        if ($this->sent_at) return 'sent';
+        if ($this->declined_at) {
+            return 'declined';
+        }
+        if ($this->completed_at) {
+            return 'completed';
+        }
+        if ($this->opened_at) {
+            return 'opened';
+        }
+        if ($this->sent_at) {
+            return 'sent';
+        }
+
         return 'awaiting';
     }
 

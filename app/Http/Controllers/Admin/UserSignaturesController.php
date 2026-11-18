@@ -12,7 +12,7 @@ class UserSignaturesController extends Controller
     {
         $request->validate([
             'signature' => 'nullable|string',
-            'initials'  => 'nullable|string',
+            'initials' => 'nullable|string',
         ]);
 
         $user = $request->user();
@@ -39,6 +39,6 @@ class UserSignaturesController extends Controller
         $user = $request->user();
         UserConfig::where('user_id', $user->id)->where('key', $type)->delete();
 
-        return back()->with('success', ucfirst($type) . ' removed.');
+        return back()->with('success', ucfirst($type).' removed.');
     }
 }

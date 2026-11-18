@@ -44,14 +44,14 @@ class WebhooksTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('settings.webhooks.store'), [
-                'url'    => 'https://example.com/webhook',
+                'url' => 'https://example.com/webhook',
                 'events' => ['form.completed', 'submission.created'],
             ])
             ->assertRedirect(route('settings.webhooks.index'));
 
         $this->assertDatabaseHas('webhook_urls', [
             'account_id' => $user->account_id,
-            'url'        => 'https://example.com/webhook',
+            'url' => 'https://example.com/webhook',
         ]);
 
         $webhook = WebhookUrl::where('account_id', $user->account_id)->first();
@@ -79,7 +79,7 @@ class WebhooksTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('settings.webhooks.store'), [
-                'url'    => 'https://example.com/hook',
+                'url' => 'https://example.com/hook',
                 'events' => ['bogus.event'],
             ])
             ->assertSessionHasErrors('events.0');
@@ -92,12 +92,12 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_updates_a_webhook_url_and_events(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $webhook = WebhookUrl::factory()->create(['account_id' => $user->account_id]);
 
         $this->actingAs($user)
             ->patch(route('settings.webhooks.update', $webhook->id), [
-                'url'    => 'https://new.example.com/hook',
+                'url' => 'https://new.example.com/hook',
                 'events' => ['template.created'],
             ])
             ->assertRedirect(route('settings.webhooks.index'));
@@ -110,14 +110,14 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_cannot_update_another_accounts_webhook(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $webhook = WebhookUrl::factory()->create(['account_id' => $other->account_id]);
 
         $this->actingAs($user)
             ->patch(route('settings.webhooks.update', $webhook->id), [
-                'url'    => 'https://evil.com/steal',
+                'url' => 'https://evil.com/steal',
                 'events' => [],
             ])
             ->assertNotFound();
@@ -130,7 +130,7 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_deletes_a_webhook_url(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $webhook = WebhookUrl::factory()->create(['account_id' => $user->account_id]);
 
         $this->actingAs($user)
@@ -143,7 +143,7 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_cannot_delete_another_accounts_webhook(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $webhook = WebhookUrl::factory()->create(['account_id' => $other->account_id]);
@@ -160,10 +160,10 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_generates_a_new_webhook_secret(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $webhook = WebhookUrl::factory()->create([
             'account_id' => $user->account_id,
-            'secret'     => 'old-secret',
+            'secret' => 'old-secret',
         ]);
 
         $this->actingAs($user)
@@ -178,7 +178,7 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_cannot_generate_secret_for_another_accounts_webhook(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $webhook = WebhookUrl::factory()->create(['account_id' => $other->account_id]);
@@ -195,10 +195,10 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_deletes_the_webhook_secret(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $webhook = WebhookUrl::factory()->create([
             'account_id' => $user->account_id,
-            'secret'     => 'existing-secret',
+            'secret' => 'existing-secret',
         ]);
 
         $this->actingAs($user)
@@ -211,7 +211,7 @@ class WebhooksTest extends TestCase
     #[Test]
     public function it_cannot_delete_secret_for_another_accounts_webhook(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $webhook = WebhookUrl::factory()->create(['account_id' => $other->account_id]);

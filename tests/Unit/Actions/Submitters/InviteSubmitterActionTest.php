@@ -20,7 +20,7 @@ class InviteSubmitterActionTest extends TestCase
     {
         parent::setUp();
         Queue::fake();
-        $this->action = new InviteSubmitterAction();
+        $this->action = new InviteSubmitterAction;
     }
 
     public function test_dispatches_email_invitation_when_submitter_has_email(): void
@@ -29,8 +29,7 @@ class InviteSubmitterActionTest extends TestCase
 
         $this->action->execute($submitter, 'Sender Name', 'My Template');
 
-        Queue::assertPushed(SendSubmitterInvitationJob::class, fn ($job) =>
-            $job->submitterId === $submitter->id
+        Queue::assertPushed(SendSubmitterInvitationJob::class, fn ($job) => $job->submitterId === $submitter->id
             && $job->senderName === 'Sender Name'
             && $job->templateName === 'My Template'
         );
@@ -43,8 +42,7 @@ class InviteSubmitterActionTest extends TestCase
 
         $this->action->execute($submitter, 'Sender Name', 'My Template');
 
-        Queue::assertPushed(SendSubmitterSmsInvitationJob::class, fn ($job) =>
-            $job->submitterId === $submitter->id
+        Queue::assertPushed(SendSubmitterSmsInvitationJob::class, fn ($job) => $job->submitterId === $submitter->id
             && $job->senderName === 'Sender Name'
             && $job->templateName === 'My Template'
         );

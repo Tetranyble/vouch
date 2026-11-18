@@ -34,7 +34,7 @@ class SubmitterInvitationMail extends Mailable
                 'submitter' => $this->submitter,
                 'senderName' => $this->senderName,
                 'templateName' => $this->templateName,
-                'formUrl' => url('/s/' . $this->submitter->slug),
+                'formUrl' => url('/s/'.$this->submitter->slug),
             ],
         );
     }

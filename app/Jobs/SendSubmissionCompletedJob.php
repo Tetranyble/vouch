@@ -6,8 +6,8 @@ use App\Mail\DocumentsCopyMail;
 use App\Mail\SubmissionCompletedMail;
 use App\Models\AccountConfig;
 use App\Models\Submitter;
-use App\Support\SubmitterDownloadLink;
 use App\Services\DynamicMailService;
+use App\Support\SubmitterDownloadLink;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,6 +20,7 @@ class SendSubmissionCompletedJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 60;
 
     public function __construct(
@@ -28,17 +29,17 @@ class SendSubmissionCompletedJob implements ShouldQueue
 
     public function handle(): void
     {
-        $submitter  = Submitter::with('submission.submitters')->findOrFail($this->submitterId);
+        $submitter = Submitter::with('submission.submitters')->findOrFail($this->submitterId);
         $submission = $submitter->submission;
 
-        if (!$submission) {
+        if (! $submission) {
             return;
         }
 
         DynamicMailService::configureForAccount($submitter->account_id);
 
         $documentName = $submission->name ?? $submission->template?->name ?? 'Document';
-        $downloadUrl  = SubmitterDownloadLink::for($submitter);
+        $downloadUrl = SubmitterDownloadLink::for($submitter);
 
         // Send documents copy to the submitter who just completed
         if ($submitter->email && $this->shouldSendDocumentsCopy($submitter->account_id)) {

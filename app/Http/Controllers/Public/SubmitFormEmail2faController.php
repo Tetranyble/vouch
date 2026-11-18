@@ -21,7 +21,7 @@ class SubmitFormEmail2faController extends Controller
     ): JsonResponse {
         $submitter = Submitter::where('slug', $slug)->with('submission.template')->firstOrFail();
 
-        if (!$submitter->email) {
+        if (! $submitter->email) {
             return response()->json(['error' => 'No email address on file.'], 422);
         }
 
@@ -29,7 +29,7 @@ class SubmitFormEmail2faController extends Controller
             return response()->json(['error' => 'Please wait before requesting another code.'], 429);
         }
 
-        $code         = $otp->generate($submitter->slug);
+        $code = $otp->generate($submitter->slug);
         $documentName = $submitter->submission?->template?->name ?? 'Document';
 
         Mail::to($submitter->email)->send(new OtpVerificationMail($code, $documentName));
@@ -50,14 +50,14 @@ class SubmitFormEmail2faController extends Controller
 
         $submitter = Submitter::where('slug', $slug)->with('submission')->firstOrFail();
 
-        if (!$otp->verify($submitter->slug, $request->input('code'))) {
+        if (! $otp->verify($submitter->slug, $request->input('code'))) {
             return response()->json(['error' => 'Invalid or expired verification code.'], 422);
         }
 
         $flowService->verifyEmail2fa($submitter->submission, $submitter, ['ip' => $request->ip()]);
 
         // Store verified state in session so the form can proceed
-        session()->put('email_2fa_verified:' . $slug, true);
+        session()->put('email_2fa_verified:'.$slug, true);
 
         return response()->json(['slug' => $slug, 'status' => '2fa_verified']);
     }

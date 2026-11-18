@@ -28,7 +28,7 @@ class SendTestWebhookJob implements ShouldQueue
     {
         $webhook = WebhookUrl::find($this->webhookUrlId);
 
-        if (!$webhook) {
+        if (! $webhook) {
             return;
         }
 

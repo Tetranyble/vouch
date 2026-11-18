@@ -2,11 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Account;
 use App\Models\CompletedSubmitter;
-use App\Models\Submission;
 use App\Models\Submitter;
-use App\Models\Template;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

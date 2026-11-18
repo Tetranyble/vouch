@@ -12,8 +12,8 @@ use RuntimeException;
 use Tetranyble\Storage\Http\Adapters\LaravelIncomingFile;
 use Tetranyble\Storage\Modules\Media\Application\UploadMedia;
 use Tetranyble\Storage\Modules\Media\Infrastructure\Persistence\Eloquent\Models\Media;
-use Tetranyble\Storage\Modules\Storage\Application\Contracts\FileSystemContract;
 use Tetranyble\Storage\Modules\Media\Infrastructure\Storage\Media\MediaDeletionService;
+use Tetranyble\Storage\Modules\Storage\Application\Contracts\FileSystemContract;
 use Tetranyble\Storage\Modules\Storage\Application\DTO\MediaUploadOptions;
 use Tetranyble\Storage\Modules\Storage\Domain\Enums\Disk;
 
@@ -61,6 +61,7 @@ final class DocumentStorage
                 throw new RuntimeException('Unable to write a temporary media file.');
             }
             $mime = (new \finfo(FILEINFO_MIME_TYPE))->file($path) ?: 'application/octet-stream';
+
             return $this->upload(new UploadedFile($path, $filename, $mime, null, true), $accountId, $purpose, $userId, $properties);
         } finally {
             @unlink($path);
@@ -79,6 +80,7 @@ final class DocumentStorage
         }
         $query = Media::query()->whereKey((int) substr($reference, 6));
         $query->where('workspace_id', $accountId);
+
         return $query->first();
     }
 
@@ -94,8 +96,10 @@ final class DocumentStorage
         }
         if ($this->isMediaReference($reference)) {
             $media = $this->findMedia($reference, $accountId);
+
             return $media !== null && $this->files->exists($media->path, $media->disk);
         }
+
         return false;
     }
 
@@ -103,6 +107,7 @@ final class DocumentStorage
     {
         if ($this->isMediaReference($reference)) {
             $media = $this->media($reference, $accountId);
+
             return $this->files->get($media->path, $media->disk);
         }
         throw new InvalidArgumentException('Expected a Tetranyble media reference.');
@@ -112,6 +117,7 @@ final class DocumentStorage
     {
         if ($this->isMediaReference($reference)) {
             $media = $this->media($reference, $accountId);
+
             return (int) $media->size;
         }
         throw new InvalidArgumentException('Expected a Tetranyble media reference.');
@@ -129,6 +135,7 @@ final class DocumentStorage
     {
         if ($this->isMediaReference($reference)) {
             $media = $this->media($reference, $accountId);
+
             // Private files must never be exposed by a static public filesystem URL.
             return URL::temporarySignedRoute('media.signed-download', now()->addHour(), [
                 'media' => $media->id,
@@ -142,6 +149,7 @@ final class DocumentStorage
     {
         if ($this->isMediaReference($reference)) {
             $media = $this->media($reference, $accountId);
+
             return response($this->get($reference, $accountId), 200, [
                 'Content-Type' => $media->mime_type ?: 'application/octet-stream',
                 'Content-Disposition' => \Symfony\Component\HttpFoundation\HeaderUtils::makeDisposition(
@@ -159,9 +167,9 @@ final class DocumentStorage
     {
         if ($this->isMediaReference($reference)) {
             $this->deletion->delete($this->media($reference, $accountId));
+
             return true;
         }
         throw new InvalidArgumentException('Expected a Tetranyble media reference.');
     }
-
 }

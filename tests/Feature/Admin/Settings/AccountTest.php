@@ -5,9 +5,7 @@ namespace Tests\Feature\Admin\Settings;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
-use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -43,21 +41,21 @@ class AccountTest extends TestCase
     #[Test]
     public function it_updates_account_name_locale_and_timezone(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $account = Account::find($user->account_id);
 
         $this->actingAs($user)
             ->patch(route('settings.account.update'), [
-                'name'     => 'Updated Corp',
-                'locale'   => 'fr',
+                'name' => 'Updated Corp',
+                'locale' => 'fr',
                 'timezone' => 'Europe/Paris',
             ])
             ->assertRedirect(route('settings.account.index'));
 
         $this->assertDatabaseHas('accounts', [
-            'id'       => $account->id,
-            'name'     => 'Updated Corp',
-            'locale'   => 'fr',
+            'id' => $account->id,
+            'name' => 'Updated Corp',
+            'locale' => 'fr',
             'timezone' => 'Europe/Paris',
         ]);
     }
@@ -69,8 +67,8 @@ class AccountTest extends TestCase
 
         $this->actingAs($user)
             ->patch(route('settings.account.update'), [
-                'name'     => '',
-                'locale'   => '',
+                'name' => '',
+                'locale' => '',
                 'timezone' => '',
             ])
             ->assertSessionHasErrors(['name', 'locale', 'timezone']);
@@ -83,8 +81,8 @@ class AccountTest extends TestCase
 
         $this->actingAs($user)
             ->patch(route('settings.account.update'), [
-                'name'     => 'Acme',
-                'locale'   => 'en',
+                'name' => 'Acme',
+                'locale' => 'en',
                 'timezone' => 'Not/ATimezone',
             ])
             ->assertSessionHasErrors('timezone');
@@ -108,32 +106,32 @@ class AccountTest extends TestCase
         $response = $this->actingAs($user)
             ->post(route('settings.account.users.store'), [
                 'first_name' => 'Jane',
-                'last_name'  => 'Doe',
-                'email'      => 'jane.doe@example.com',
-                'role'       => 'admin',
+                'last_name' => 'Doe',
+                'email' => 'jane.doe@example.com',
+                'role' => 'admin',
             ]);
 
         $response->assertRedirect(route('settings.account.index'));
 
         $this->assertDatabaseHas('users', [
-            'email'      => 'jane.doe@example.com',
+            'email' => 'jane.doe@example.com',
             'account_id' => $user->account_id,
-            'role'       => 'admin',
+            'role' => 'admin',
         ]);
     }
 
     #[Test]
     public function it_rejects_invite_with_duplicate_email(): void
     {
-        $user      = User::factory()->create();
-        $existing  = User::factory()->create(['email' => 'taken@example.com']);
+        $user = User::factory()->create();
+        $existing = User::factory()->create(['email' => 'taken@example.com']);
 
         $this->actingAs($user)
             ->post(route('settings.account.users.store'), [
                 'first_name' => 'Bob',
-                'last_name'  => 'Smith',
-                'email'      => 'taken@example.com',
-                'role'       => 'admin',
+                'last_name' => 'Smith',
+                'email' => 'taken@example.com',
+                'role' => 'admin',
             ])
             ->assertSessionHasErrors('email');
     }
@@ -145,7 +143,7 @@ class AccountTest extends TestCase
     #[Test]
     public function it_removes_another_user_from_the_account(): void
     {
-        $user   = User::factory()->create();
+        $user = User::factory()->create();
         $member = User::factory()->create(['account_id' => $user->account_id]);
 
         $this->actingAs($user)
@@ -180,7 +178,7 @@ class AccountTest extends TestCase
     #[Test]
     public function it_cannot_remove_a_user_from_another_account(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create(); // different account
 
         $this->actingAs($user)

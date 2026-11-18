@@ -22,7 +22,7 @@ class SubmissionFlowService
         $this->recordEvent($submission, $submitter, 'submit', $payload);
 
         $isCompleted = ($payload['completed'] ?? false) || array_key_exists('completed_at', $payload);
-        if (!$isCompleted) {
+        if (! $isCompleted) {
             return;
         }
 
@@ -31,8 +31,8 @@ class SubmissionFlowService
             $submitter->save();
         }
 
-        $allCompleted = !$submission->submitters()->whereNull('completed_at')->exists();
-        if (!$allCompleted || $this->hasCompletionEvent($submission)) {
+        $allCompleted = ! $submission->submitters()->whereNull('completed_at')->exists();
+        if (! $allCompleted || $this->hasCompletionEvent($submission)) {
             return;
         }
 
@@ -49,7 +49,7 @@ class SubmissionFlowService
     public function inviteNext(Submission $submission, Submitter $submitter): void
     {
         $this->recordEvent($submission, $submitter, 'invite_next', []);
-        if (!empty($submitter->email)) {
+        if (! empty($submitter->email)) {
             $templateName = $submission->template?->name ?? 'Document';
             $senderName = optional($submission->createdByUser)->full_name ?? config('app.name', 'Vouch');
             SendSubmitterInvitationJob::dispatch($submitter->id, $senderName, $templateName);

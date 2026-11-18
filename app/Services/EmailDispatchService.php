@@ -44,7 +44,7 @@ class EmailDispatchService
         $submission = Submission::query()->findOrFail($submissionId);
         $authorId = $submission->created_by_user_id;
 
-        if (!$authorId) {
+        if (! $authorId) {
             $authorId = User::query()
                 ->where('account_id', $submission->account_id)
                 ->value('id');
@@ -54,7 +54,7 @@ class EmailDispatchService
             $mail->to($email)->subject($subject);
         });
 
-        if (!$authorId) {
+        if (! $authorId) {
             return;
         }
 
@@ -64,7 +64,7 @@ class EmailDispatchService
             'account_id' => $submission->account_id,
             'subject' => $subject,
             'body' => $body,
-            'sha1' => sha1($subject . $body),
+            'sha1' => sha1($subject.$body),
         ]);
 
         EmailEvent::query()->create([

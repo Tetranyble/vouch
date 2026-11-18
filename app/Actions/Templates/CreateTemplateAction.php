@@ -13,10 +13,10 @@ class CreateTemplateAction
 {
     public function execute(User $author, string $name, ?int $folderId = null, string $source = 'builder'): Template
     {
-        if (!$folderId) {
+        if (! $folderId) {
             $folder = TemplateFolder::firstOrCreate(
                 ['account_id' => $author->account_id, 'name' => 'Default'],
-                ['author_id'  => $author->id],
+                ['author_id' => $author->id],
             );
             $folderId = $folder->id;
         }
@@ -29,15 +29,15 @@ class CreateTemplateAction
         );
 
         $template = Template::create([
-            'slug'        => Str::random(14),
-            'name'        => $name,
-            'schema'      => [],
-            'fields'      => [],
-            'submitters'  => [['name' => 'First Party', 'uuid' => (string) Str::uuid()]],
-            'author_id'   => $author->id,
-            'account_id'  => $author->account_id,
-            'source'      => $source,
-            'folder_id'   => $folderId,
+            'slug' => Str::random(14),
+            'name' => $name,
+            'schema' => [],
+            'fields' => [],
+            'submitters' => [['name' => 'First Party', 'uuid' => (string) Str::uuid()]],
+            'author_id' => $author->id,
+            'account_id' => $author->account_id,
+            'source' => $source,
+            'folder_id' => $folderId,
             'preferences' => [],
             'shared_link' => false,
         ]);

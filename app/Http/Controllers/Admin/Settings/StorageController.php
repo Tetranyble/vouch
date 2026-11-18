@@ -13,6 +13,7 @@ class StorageController extends Controller
     public function index(Request $request)
     {
         $account = $request->user()->account;
+
         return Inertia::render('Admin/Settings/Storage', [
             'settings' => [
                 'driver' => config('tetranyble-storage.default_disk', 'local'),

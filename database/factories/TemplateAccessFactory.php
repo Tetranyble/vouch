@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Template;
 use App\Models\TemplateAccess;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

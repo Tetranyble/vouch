@@ -13,7 +13,7 @@ class ToolsController extends Controller
     public function merge(Request $request, PdfMergeService $service): JsonResponse
     {
         $request->validate([
-            'files'   => 'required|array|min:1',
+            'files' => 'required|array|min:1',
             'files.*' => 'required|string',
         ]);
 
@@ -23,7 +23,7 @@ class ToolsController extends Controller
         );
 
         foreach ($pdfContents as $i => $content) {
-            if ($content === false || !str_starts_with($content, '%PDF')) {
+            if ($content === false || ! str_starts_with($content, '%PDF')) {
                 return response()->json(['error' => "File at index {$i} is not a valid base64-encoded PDF"], 422);
             }
         }
@@ -31,7 +31,7 @@ class ToolsController extends Controller
         try {
             $merged = $service->merge($pdfContents);
         } catch (\Throwable $e) {
-            return response()->json(['error' => 'PDF merge failed: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'PDF merge failed: '.$e->getMessage()], 500);
         }
 
         return response()->json(['data' => base64_encode($merged)]);
@@ -45,7 +45,7 @@ class ToolsController extends Controller
 
         $content = base64_decode($request->input('file'), strict: true);
 
-        if ($content === false || !str_starts_with($content, '%PDF')) {
+        if ($content === false || ! str_starts_with($content, '%PDF')) {
             return response()->json(['error' => 'Invalid base64-encoded PDF'], 422);
         }
 

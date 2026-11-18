@@ -3,10 +3,8 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Account;
-use App\Models\SearchEntry;
 use App\Models\Submission;
 use App\Models\Submitter;
-use App\Models\Template;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -22,7 +20,7 @@ class SubmissionTest extends TestCase
     #[Test]
     public function it_returns_only_non_archived_submissions_with_active_scope(): void
     {
-        $active   = Submission::factory()->create(['archived_at' => null]);
+        $active = Submission::factory()->create(['archived_at' => null]);
         $archived = Submission::factory()->create(['archived_at' => now()]);
 
         $results = Submission::active()->pluck('id');
@@ -38,7 +36,7 @@ class SubmissionTest extends TestCase
     #[Test]
     public function it_returns_only_archived_submissions_with_archived_scope(): void
     {
-        $active   = Submission::factory()->create(['archived_at' => null]);
+        $active = Submission::factory()->create(['archived_at' => null]);
         $archived = Submission::factory()->create(['archived_at' => now()]);
 
         $results = Submission::archived()->pluck('id');
@@ -58,16 +56,16 @@ class SubmissionTest extends TestCase
         $pending = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $pending->id,
-            'account_id'    => $pending->account_id,
-            'completed_at'  => null,
+            'account_id' => $pending->account_id,
+            'completed_at' => null,
         ]);
 
         // Completed submission: all submitters have completed_at
         $completed = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $completed->id,
-            'account_id'    => $completed->account_id,
-            'completed_at'  => now(),
+            'account_id' => $completed->account_id,
+            'completed_at' => now(),
         ]);
 
         $results = Submission::pending()->pluck('id');
@@ -87,16 +85,16 @@ class SubmissionTest extends TestCase
         $completed = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $completed->id,
-            'account_id'    => $completed->account_id,
-            'completed_at'  => now(),
+            'account_id' => $completed->account_id,
+            'completed_at' => now(),
         ]);
 
         // Still pending (one submitter without completed_at)
         $pending = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $pending->id,
-            'account_id'    => $pending->account_id,
-            'completed_at'  => null,
+            'account_id' => $pending->account_id,
+            'completed_at' => null,
         ]);
 
         // No submitters at all — should NOT appear in completed
@@ -119,15 +117,15 @@ class SubmissionTest extends TestCase
         $declined = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $declined->id,
-            'account_id'    => $declined->account_id,
-            'declined_at'   => now(),
+            'account_id' => $declined->account_id,
+            'declined_at' => now(),
         ]);
 
         $normal = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $normal->id,
-            'account_id'    => $normal->account_id,
-            'declined_at'   => null,
+            'account_id' => $normal->account_id,
+            'declined_at' => null,
         ]);
 
         $results = Submission::declined()->pluck('id');
@@ -162,7 +160,7 @@ class SubmissionTest extends TestCase
     #[Test]
     public function it_finds_a_submission_by_its_name(): void
     {
-        $match  = Submission::factory()->create(['name' => 'Contract Alpha']);
+        $match = Submission::factory()->create(['name' => 'Contract Alpha']);
         $noMatch = Submission::factory()->create(['name' => 'Invoice Beta']);
 
         $results = Submission::search('Alpha')->pluck('id');
@@ -177,15 +175,15 @@ class SubmissionTest extends TestCase
         $match = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $match->id,
-            'account_id'    => $match->account_id,
-            'email'         => 'alice@example.com',
+            'account_id' => $match->account_id,
+            'email' => 'alice@example.com',
         ]);
 
         $noMatch = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $noMatch->id,
-            'account_id'    => $noMatch->account_id,
-            'email'         => 'bob@other.com',
+            'account_id' => $noMatch->account_id,
+            'email' => 'bob@other.com',
         ]);
 
         $results = Submission::search('alice')->pluck('id');
@@ -200,15 +198,15 @@ class SubmissionTest extends TestCase
         $match = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $match->id,
-            'account_id'    => $match->account_id,
-            'name'          => 'Charlie Brown',
+            'account_id' => $match->account_id,
+            'name' => 'Charlie Brown',
         ]);
 
         $noMatch = Submission::factory()->create();
         Submitter::factory()->create([
             'submission_id' => $noMatch->id,
-            'account_id'    => $noMatch->account_id,
-            'name'          => 'Diana Prince',
+            'account_id' => $noMatch->account_id,
+            'name' => 'Diana Prince',
         ]);
 
         $results = Submission::search('Charlie')->pluck('id');
@@ -235,9 +233,9 @@ class SubmissionTest extends TestCase
         $submission = Submission::factory()->create(['expire_at' => null]);
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => now(),
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => now(),
+            'declined_at' => null,
         ]);
 
         $submission->refresh();
@@ -252,9 +250,9 @@ class SubmissionTest extends TestCase
         $submission = Submission::factory()->create(['expire_at' => null]);
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'declined_at'   => now(),
-            'completed_at'  => null,
+            'account_id' => $submission->account_id,
+            'declined_at' => now(),
+            'completed_at' => null,
         ]);
 
         $submission->refresh();
@@ -279,15 +277,15 @@ class SubmissionTest extends TestCase
         $submission = Submission::factory()->create(['expire_at' => null]);
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => now(),
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => now(),
+            'declined_at' => null,
         ]);
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $submission->refresh();

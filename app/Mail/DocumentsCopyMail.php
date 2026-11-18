@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Facades\DocumentStorage;
 use App\Models\CompletedDocument;
 use App\Models\Submitter;
 use Illuminate\Bus\Queueable;
@@ -10,7 +11,6 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Facades\DocumentStorage;
 
 class DocumentsCopyMail extends Mailable
 {
@@ -37,7 +37,7 @@ class DocumentsCopyMail extends Mailable
     public function attachments(): array
     {
         $attachments = [];
-        $totalSize   = 0;
+        $totalSize = 0;
 
         $docs = CompletedDocument::where('submitter_id', $this->submitter->id)
             ->whereNotNull('storage_path')
@@ -55,7 +55,7 @@ class DocumentsCopyMail extends Mailable
         }
 
         foreach ($docs as $doc) {
-            if (!DocumentStorage::exists($doc->storage_path, $this->submitter->account_id)) {
+            if (! DocumentStorage::exists($doc->storage_path, $this->submitter->account_id)) {
                 continue;
             }
 
@@ -64,7 +64,7 @@ class DocumentsCopyMail extends Mailable
                 break;
             }
 
-            $totalSize   += $size;
+            $totalSize += $size;
             $attachments[] = Attachment::fromData(
                 fn () => DocumentStorage::get($doc->storage_path, $this->submitter->account_id),
                 $doc->filename ?? 'document.pdf',

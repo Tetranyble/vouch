@@ -31,10 +31,10 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create(); // different account
 
-        $mine  = Template::factory()->create(['account_id' => $user->account_id, 'author_id' => $user->id]);
+        $mine = Template::factory()->create(['account_id' => $user->account_id, 'author_id' => $user->id]);
         $theirs = Template::factory()->create(['account_id' => $other->account_id, 'author_id' => $other->id]);
 
         $response = $this->actingAs($user)->get(route('templates.index'));
@@ -60,10 +60,10 @@ class TemplatesTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('templates', [
-            'name'       => 'My New Template',
+            'name' => 'My New Template',
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
-            'source'     => 'builder',
+            'author_id' => $user->id,
+            'source' => 'builder',
         ]);
 
         $template = Template::where('name', 'My New Template')->first();
@@ -89,11 +89,11 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user     = User::factory()->create();
+        $user = User::factory()->create();
         $template = Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
-            'name'       => 'Old Name',
+            'author_id' => $user->id,
+            'name' => 'Old Name',
         ]);
 
         $response = $this->actingAs($user)->put(route('templates.update', $template->id), [
@@ -109,12 +109,12 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $template = Template::factory()->create([
             'account_id' => $other->account_id,
-            'author_id'  => $other->id,
+            'author_id' => $other->id,
         ]);
 
         $this->actingAs($user)
@@ -131,10 +131,10 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user     = User::factory()->create();
+        $user = User::factory()->create();
         $template = Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
             'archived_at' => null,
         ]);
 
@@ -155,10 +155,10 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user     = User::factory()->create();
+        $user = User::factory()->create();
         $template = Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
             'archived_at' => now()->subDay(),
         ]);
 
@@ -172,12 +172,12 @@ class TemplatesTest extends TestCase
     #[Test]
     public function it_cannot_restore_another_accounts_archived_template(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $template = Template::factory()->create([
             'account_id' => $other->account_id,
-            'author_id'  => $other->id,
+            'author_id' => $other->id,
             'archived_at' => now()->subDay(),
         ]);
 
@@ -195,11 +195,11 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user     = User::factory()->create();
+        $user = User::factory()->create();
         $template = Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
-            'name'       => 'Original Template',
+            'author_id' => $user->id,
+            'name' => 'Original Template',
         ]);
 
         $response = $this->actingAs($user)
@@ -216,12 +216,12 @@ class TemplatesTest extends TestCase
     #[Test]
     public function it_cannot_clone_another_accounts_template(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $template = Template::factory()->create([
             'account_id' => $other->account_id,
-            'author_id'  => $other->id,
+            'author_id' => $other->id,
         ]);
 
         $this->actingAs($user)
@@ -242,13 +242,13 @@ class TemplatesTest extends TestCase
 
         Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
-            'name'       => 'Invoice Contract',
+            'author_id' => $user->id,
+            'name' => 'Invoice Contract',
         ]);
         Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
-            'name'       => 'NDA Agreement',
+            'author_id' => $user->id,
+            'name' => 'NDA Agreement',
         ]);
 
         $response = $this->actingAs($user)
@@ -268,14 +268,14 @@ class TemplatesTest extends TestCase
     {
         Queue::fake();
 
-        $user     = User::factory()->create();
+        $user = User::factory()->create();
         $template = Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
         ]);
         $folder = TemplateFolder::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
         ]);
 
         $this->actingAs($user)
@@ -288,16 +288,16 @@ class TemplatesTest extends TestCase
     #[Test]
     public function it_cannot_move_template_to_another_accounts_folder(): void
     {
-        $user     = User::factory()->create();
+        $user = User::factory()->create();
         $otherUser = User::factory()->create();
 
         $template = Template::factory()->create([
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
         ]);
         $otherFolder = TemplateFolder::factory()->create([
             'account_id' => $otherUser->account_id,
-            'author_id'  => $otherUser->id,
+            'author_id' => $otherUser->id,
         ]);
 
         $this->actingAs($user)

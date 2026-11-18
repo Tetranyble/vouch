@@ -10,7 +10,7 @@ class FormEventsController extends ApiBaseController
 {
     public function index(Request $request): JsonResponse
     {
-        $user  = $request->user();
+        $user = $request->user();
         $query = SubmissionEvent::where('account_id', $user->account_id)
             ->with(['submission.template', 'submitter'])
             ->latest('event_timestamp');
@@ -29,20 +29,20 @@ class FormEventsController extends ApiBaseController
 
         $result = $this->paginate($query, $request, 25);
         $result['data'] = $result['data']->map(fn ($e) => [
-            'id'              => $e->id,
-            'event_type'      => $e->event_type,
+            'id' => $e->id,
+            'event_type' => $e->event_type,
             'event_timestamp' => $e->event_timestamp,
-            'data'            => $e->data ?? [],
-            'submission_id'   => $e->submission_id,
-            'submitter'       => $e->submitter ? [
-                'id'    => $e->submitter->id,
+            'data' => $e->data ?? [],
+            'submission_id' => $e->submission_id,
+            'submitter' => $e->submitter ? [
+                'id' => $e->submitter->id,
                 'email' => $e->submitter->email,
-                'name'  => $e->submitter->name,
+                'name' => $e->submitter->name,
             ] : null,
             'submission' => $e->submission ? [
-                'id'       => $e->submission->id,
+                'id' => $e->submission->id,
                 'template' => $e->submission->template ? [
-                    'id'   => $e->submission->template->id,
+                    'id' => $e->submission->template->id,
                     'name' => $e->submission->template->name,
                 ] : null,
             ] : null,

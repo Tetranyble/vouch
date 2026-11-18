@@ -9,7 +9,6 @@ use App\Jobs\ReindexSearchEntryJob;
 use App\Jobs\SendSubmitterInvitationJob;
 use App\Jobs\SendSubmitterSmsInvitationJob;
 use App\Models\Submission;
-use App\Models\Submitter;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +26,7 @@ class CreateSubmissionActionTest extends TestCase
     {
         parent::setUp();
         Queue::fake();
-        $this->action = new CreateSubmissionAction(new InviteSubmitterAction());
+        $this->action = new CreateSubmissionAction(new InviteSubmitterAction);
     }
 
     private function templateWithSubmitters(int $count = 1, array $overrides = []): Template
@@ -43,15 +42,15 @@ class CreateSubmissionActionTest extends TestCase
     public function test_creates_submission_record(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['email' => 'a@b.com']], 'invite');
 
         $this->assertDatabaseHas('submissions', [
-            'template_id'        => $template->id,
-            'account_id'         => $user->account_id,
+            'template_id' => $template->id,
+            'account_id' => $user->account_id,
             'created_by_user_id' => $user->id,
-            'source'             => 'invite',
+            'source' => 'invite',
         ]);
         $this->assertInstanceOf(Submission::class, $submission);
     }
@@ -59,7 +58,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_creates_one_submitter_per_template_submitter(): void
     {
         $template = $this->templateWithSubmitters(2);
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [
             ['email' => 'first@b.com'],
@@ -72,7 +71,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_submitter_gets_correct_email_from_input(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['email' => 'test@example.com']]);
 
@@ -82,7 +81,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_submitter_gets_correct_phone_from_input(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['phone' => '+1234567890']]);
 
@@ -92,7 +91,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_first_submitter_sent_at_is_set_when_email_provided(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['email' => 'a@b.com']]);
 
@@ -102,7 +101,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_first_submitter_sent_at_is_null_when_no_contact(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['name' => 'John']]);
 
@@ -112,7 +111,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_subsequent_submitters_sent_at_is_null(): void
     {
         $template = $this->templateWithSubmitters(2);
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [
             ['email' => 'first@b.com'],
@@ -125,7 +124,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_stores_expire_at_on_submission(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [], expireAt: '2030-12-31');
 
@@ -135,12 +134,11 @@ class CreateSubmissionActionTest extends TestCase
     public function test_dispatches_webhook_created_event(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['email' => 'a@b.com']]);
 
-        Queue::assertPushed(DispatchWebhookEventJob::class, fn ($job) =>
-            $job->eventType === 'submission.created'
+        Queue::assertPushed(DispatchWebhookEventJob::class, fn ($job) => $job->eventType === 'submission.created'
             && $job->accountId === $user->account_id
             && $job->submissionId === $submission->id
         );
@@ -149,19 +147,18 @@ class CreateSubmissionActionTest extends TestCase
     public function test_dispatches_reindex_job(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [['email' => 'a@b.com']]);
 
-        Queue::assertPushed(ReindexSearchEntryJob::class, fn ($job) =>
-            $job->recordType === 'Submission' && $job->recordId === $submission->id
+        Queue::assertPushed(ReindexSearchEntryJob::class, fn ($job) => $job->recordType === 'Submission' && $job->recordId === $submission->id
         );
     }
 
     public function test_dispatches_email_invitation_for_first_submitter(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $this->action->execute($template, $user, [['email' => 'invite@example.com']]);
 
@@ -171,7 +168,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_dispatches_sms_invitation_when_first_submitter_has_only_phone(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $this->action->execute($template, $user, [['phone' => '+1234567890']]);
 
@@ -182,7 +179,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_no_invitation_dispatched_when_first_submitter_has_no_contact(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $this->action->execute($template, $user, [['name' => 'Anonymous']]);
 
@@ -193,7 +190,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_source_is_stored_on_submission(): void
     {
         $template = $this->templateWithSubmitters();
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [], source: 'bulk_invite');
 
@@ -203,7 +200,7 @@ class CreateSubmissionActionTest extends TestCase
     public function test_returns_submission_with_loaded_submitters(): void
     {
         $template = $this->templateWithSubmitters(2);
-        $user     = User::factory()->create(['account_id' => $template->account_id]);
+        $user = User::factory()->create(['account_id' => $template->account_id]);
 
         $submission = $this->action->execute($template, $user, [
             ['email' => 'a@b.com'],
@@ -213,6 +210,7 @@ class CreateSubmissionActionTest extends TestCase
         $this->assertTrue($submission->relationLoaded('submitters'));
         $this->assertCount(2, $submission->submitters);
     }
+
     public function test_a_failed_signer_insert_does_not_leave_an_orphaned_submission(): void
     {
         // A malformed signer role causes the second insert to fail; transaction rolls back the first.
@@ -238,5 +236,4 @@ class CreateSubmissionActionTest extends TestCase
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
         $this->action->execute($template, $user, [['email' => 'attacker@example.com']]);
     }
-
 }

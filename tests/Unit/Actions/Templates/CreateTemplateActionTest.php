@@ -22,7 +22,7 @@ class CreateTemplateActionTest extends TestCase
     {
         parent::setUp();
         Queue::fake();
-        $this->action = new CreateTemplateAction();
+        $this->action = new CreateTemplateAction;
     }
 
     public function test_creates_template_with_given_name(): void
@@ -32,10 +32,10 @@ class CreateTemplateActionTest extends TestCase
         $template = $this->action->execute($user, 'My Contract');
 
         $this->assertDatabaseHas('templates', [
-            'name'       => 'My Contract',
-            'author_id'  => $user->id,
+            'name' => 'My Contract',
+            'author_id' => $user->id,
             'account_id' => $user->account_id,
-            'source'     => 'builder',
+            'source' => 'builder',
         ]);
         $this->assertInstanceOf(Template::class, $template);
         $this->assertEquals('My Contract', $template->name);
@@ -48,14 +48,14 @@ class CreateTemplateActionTest extends TestCase
         $this->action->execute($user, 'NDA');
 
         $this->assertDatabaseHas('template_folders', [
-            'name'       => 'Default',
+            'name' => 'Default',
             'account_id' => $user->account_id,
         ]);
     }
 
     public function test_reuses_existing_default_folder(): void
     {
-        $user   = User::factory()->create();
+        $user = User::factory()->create();
         $folder = TemplateFolder::factory()->create(['name' => 'Default', 'account_id' => $user->account_id]);
 
         $this->action->execute($user, 'Doc 1');
@@ -66,7 +66,7 @@ class CreateTemplateActionTest extends TestCase
 
     public function test_uses_provided_folder_id(): void
     {
-        $user   = User::factory()->create();
+        $user = User::factory()->create();
         $folder = TemplateFolder::factory()->create(['account_id' => $user->account_id]);
 
         $template = $this->action->execute($user, 'Invoice', folderId: $folder->id);
@@ -100,11 +100,9 @@ class CreateTemplateActionTest extends TestCase
 
         $template = $this->action->execute($user, 'Contract');
 
-        Queue::assertPushed(DispatchWebhookEventJob::class, fn ($job) =>
-            $job->eventType === 'template.created' && $job->accountId === $user->account_id
+        Queue::assertPushed(DispatchWebhookEventJob::class, fn ($job) => $job->eventType === 'template.created' && $job->accountId === $user->account_id
         );
-        Queue::assertPushed(ReindexSearchEntryJob::class, fn ($job) =>
-            $job->recordType === 'Template' && $job->recordId === $template->id
+        Queue::assertPushed(ReindexSearchEntryJob::class, fn ($job) => $job->recordType === 'Template' && $job->recordId === $template->id
         );
     }
 

@@ -11,7 +11,7 @@ class SubmissionsPerTemplateExportController extends Controller
 {
     public function index(Request $request, int $templateId)
     {
-        $user     = $request->user();
+        $user = $request->user();
         $template = Template::forAccount($user->account_id)->findOrFail($templateId);
 
         $submissions = Submission::with(['submitters'])
@@ -40,7 +40,7 @@ class SubmissionsPerTemplateExportController extends Controller
         foreach ($submissions as $submission) {
             foreach ($submission->submitters as $submitter) {
                 $values = $submitter->values ?? [];
-                $row    = [
+                $row = [
                     $submission->id,
                     $submission->status,
                     $submission->created_at?->format('Y-m-d H:i:s'),
@@ -52,7 +52,7 @@ class SubmissionsPerTemplateExportController extends Controller
                 ];
 
                 foreach ($fields as $field) {
-                    $uuid  = $field['uuid'] ?? null;
+                    $uuid = $field['uuid'] ?? null;
                     $value = $uuid ? ($values[$uuid] ?? '') : '';
 
                     if (is_bool($value)) {
@@ -70,11 +70,11 @@ class SubmissionsPerTemplateExportController extends Controller
             }
         }
 
-        $filename = 'submissions-' . str_replace(' ', '-', strtolower($template->name)) . '.csv';
+        $filename = 'submissions-'.str_replace(' ', '-', strtolower($template->name)).'.csv';
 
         $callback = function () use ($headers, $rows) {
             $handle = fopen('php://output', 'w');
-            fputs($handle, "\xEF\xBB\xBF"); // UTF-8 BOM
+            fwrite($handle, "\xEF\xBB\xBF"); // UTF-8 BOM
             fputcsv($handle, $headers);
             foreach ($rows as $row) {
                 fputcsv($handle, $row);
@@ -83,7 +83,7 @@ class SubmissionsPerTemplateExportController extends Controller
         };
 
         return response()->stream($callback, 200, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
     }

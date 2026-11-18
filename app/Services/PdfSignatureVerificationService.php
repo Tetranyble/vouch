@@ -10,11 +10,11 @@ class PdfSignatureVerificationService
     public function verify(string $pdfContent): array
     {
         $checksumStatus = $this->verifyChecksum($pdfContent);
-        $signatures     = $this->extractSignatures($pdfContent);
+        $signatures = $this->extractSignatures($pdfContent);
 
         return [
             'checksum_status' => $checksumStatus,
-            'signatures'      => $signatures,
+            'signatures' => $signatures,
         ];
     }
 
@@ -45,10 +45,10 @@ class PdfSignatureVerificationService
             $offset = $pos + 1;
             $sigBlock = substr($pdfContent, max(0, $pos - 200), 2000);
 
-            $name    = $this->extractPdfValue($sigBlock, '/Name');
-            $reason  = $this->extractPdfValue($sigBlock, '/Reason');
+            $name = $this->extractPdfValue($sigBlock, '/Name');
+            $reason = $this->extractPdfValue($sigBlock, '/Reason');
             $location = $this->extractPdfValue($sigBlock, '/Location');
-            $date    = $this->extractPdfDate($sigBlock);
+            $date = $this->extractPdfDate($sigBlock);
 
             // Extract PKCS#7 Contents and ByteRange for cryptographic verification
             $verified = false;
@@ -64,8 +64,8 @@ class PdfSignatureVerificationService
             }
 
             $signatures[] = array_filter([
-                'name'     => $name,
-                'reason'   => $reason,
+                'name' => $name,
+                'reason' => $reason,
                 'location' => $location,
                 'signed_at' => $date,
                 'verified' => $verified,
@@ -78,25 +78,26 @@ class PdfSignatureVerificationService
     private function extractPdfValue(string $block, string $key): ?string
     {
         // Match /Key (value) or /Key value
-        if (preg_match('/' . preg_quote($key, '/') . '\s*\(([^)]*)\)/', $block, $m)) {
+        if (preg_match('/'.preg_quote($key, '/').'\s*\(([^)]*)\)/', $block, $m)) {
             return $this->decodePdfString($m[1]);
         }
-        if (preg_match('/' . preg_quote($key, '/') . '\s+\/([^\s\/\]>]+)/', $block, $m)) {
+        if (preg_match('/'.preg_quote($key, '/').'\s+\/([^\s\/\]>]+)/', $block, $m)) {
             return $m[1];
         }
+
         return null;
     }
 
     private function extractPdfDate(string $block): ?string
     {
-        if (!preg_match('/\/M\s*\(D:(\d{14})/', $block, $m)) {
+        if (! preg_match('/\/M\s*\(D:(\d{14})/', $block, $m)) {
             return null;
         }
         $raw = $m[1];
-        $year   = substr($raw, 0, 4);
-        $month  = substr($raw, 4, 2);
-        $day    = substr($raw, 6, 2);
-        $hour   = substr($raw, 8, 2);
+        $year = substr($raw, 0, 4);
+        $month = substr($raw, 4, 2);
+        $day = substr($raw, 6, 2);
+        $hour = substr($raw, 8, 2);
         $minute = substr($raw, 10, 2);
         $second = substr($raw, 12, 2);
 
@@ -110,12 +111,13 @@ class PdfSignatureVerificationService
             if (strlen($c) === 3) {
                 return chr(octdec($c));
             }
+
             return match ($c) {
-                'n'  => "\n",
-                'r'  => "\r",
-                't'  => "\t",
+                'n' => "\n",
+                'r' => "\r",
+                't' => "\t",
                 '\\' => '\\',
-                '('  => '(',
+                '(' => '(',
                 default => $c,
             };
         }, $str);
@@ -130,7 +132,7 @@ class PdfSignatureVerificationService
 
         [$o1, $l1, $o2, $l2] = array_map('intval', $parts);
 
-        $signed = substr($pdfContent, $o1, $l1) . substr($pdfContent, $o2, $l2);
+        $signed = substr($pdfContent, $o1, $l1).substr($pdfContent, $o2, $l2);
 
         $tmpData = null;
         $tmpSig = null;
@@ -144,12 +146,17 @@ class PdfSignatureVerificationService
                 [],
                 $tmpSig
             );
+
             return $result === true;
         } catch (\Throwable) {
             return false;
         } finally {
-            if ($tmpData) @unlink($tmpData);
-            if ($tmpSig) @unlink($tmpSig);
+            if ($tmpData) {
+                @unlink($tmpData);
+            }
+            if ($tmpSig) {
+                @unlink($tmpSig);
+            }
         }
     }
 }

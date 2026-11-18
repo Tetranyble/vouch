@@ -63,6 +63,7 @@ final class CompletedDocumentWriter
                     if ($record->filename !== $filename) {
                         $record->update(['filename' => $filename]);
                     }
+
                     return $record;
                 }
 
@@ -83,6 +84,7 @@ final class CompletedDocumentWriter
                         ...$attributes,
                     ]);
                 }
+
                 return $record;
             });
         } catch (\Throwable $error) {
@@ -92,6 +94,7 @@ final class CompletedDocumentWriter
 
         if ($reusedPrevious) {
             $this->deleteObsolete($newReference, $accountId);
+
             return $record;
         }
 

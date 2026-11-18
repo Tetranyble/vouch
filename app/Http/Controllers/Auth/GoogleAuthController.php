@@ -71,6 +71,7 @@ class GoogleAuthController extends Controller
                     ['account_id' => $account->id, 'name' => 'Default'],
                     ['author_id' => $user->id]
                 );
+
                 return $user;
             });
         }

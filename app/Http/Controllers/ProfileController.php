@@ -26,10 +26,10 @@ class ProfileController extends Controller
 
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
-            'status'          => session('status'),
-            'userSignature'   => $configs->get('signature'),
-            'userInitials'    => $configs->get('initials'),
-            'mfaEnabled'      => (bool) $configs->get('totp_secret'),
+            'status' => session('status'),
+            'userSignature' => $configs->get('signature'),
+            'userInitials' => $configs->get('initials'),
+            'mfaEnabled' => (bool) $configs->get('totp_secret'),
         ]);
     }
 

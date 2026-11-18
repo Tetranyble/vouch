@@ -46,16 +46,16 @@ class SubmitFormStripeController extends Controller
         try {
             $response = Http::withToken($stripeKey)->asForm()->timeout(20)
                 ->post('https://api.stripe.com/v1/checkout/sessions', [
-                'mode' => 'payment',
-                'line_items[0][price_data][currency]' => $currency,
-                'line_items[0][price_data][unit_amount]' => $cents,
-                'line_items[0][price_data][product_data][name]' => (string) ($field['name'] ?? 'Document payment'),
-                'line_items[0][quantity]' => 1,
-                'success_url' => url("/s/{$slug}?payment=success"),
-                'cancel_url' => url("/s/{$slug}?payment=cancelled"),
-                'metadata[submitter_slug]' => $slug,
-                'metadata[field_uuid]' => $validated['field_uuid'],
-                'metadata[account_id]' => $submitter->account_id,
+                    'mode' => 'payment',
+                    'line_items[0][price_data][currency]' => $currency,
+                    'line_items[0][price_data][unit_amount]' => $cents,
+                    'line_items[0][price_data][product_data][name]' => (string) ($field['name'] ?? 'Document payment'),
+                    'line_items[0][quantity]' => 1,
+                    'success_url' => url("/s/{$slug}?payment=success"),
+                    'cancel_url' => url("/s/{$slug}?payment=cancelled"),
+                    'metadata[submitter_slug]' => $slug,
+                    'metadata[field_uuid]' => $validated['field_uuid'],
+                    'metadata[account_id]' => $submitter->account_id,
                 ]);
         } catch (\Illuminate\Http\Client\ConnectionException $error) {
             return response()->json(['error' => 'Payment provider is temporarily unreachable.'], 502);
@@ -64,6 +64,7 @@ class SubmitFormStripeController extends Controller
         if ($response->failed() || ! is_string($response->json('url'))) {
             return response()->json(['error' => 'Failed to create payment session.'], 502);
         }
+
         return response()->json(['url' => $response->json('url')]);
     }
 
@@ -124,12 +125,16 @@ class SubmitFormStripeController extends Controller
                 return;
             }
             $submission = $submitter->submission;
-            if (! $submission || (int) $submission->account_id !== (int) $accountId) return;
+            if (! $submission || (int) $submission->account_id !== (int) $accountId) {
+                return;
+            }
 
             $field = collect($submission->template_fields ?? [])->first(fn ($f) => is_array($f)
                 && ($f['uuid'] ?? null) === $fieldUuid && ($f['submitter_uuid'] ?? null) === $submitter->uuid
                 && ($f['type'] ?? null) === 'payment');
-            if (! $field) return;
+            if (! $field) {
+                return;
+            }
 
             $price = $field['preferences']['price'] ?? null;
             $currency = strtolower((string) ($field['preferences']['currency'] ?? 'USD'));
@@ -139,10 +144,14 @@ class SubmitFormStripeController extends Controller
             }
 
             $values = $submitter->values ?? [];
-            if (($values[$fieldUuid] ?? null) === $paymentIntent) return; // Stripe retry
+            if (($values[$fieldUuid] ?? null) === $paymentIntent) {
+                return;
+            } // Stripe retry
             // Preserve the first successful verified payment, never overwrite it
             // with a different session's payment intent.
-            if (! empty($values[$fieldUuid])) return;
+            if (! empty($values[$fieldUuid])) {
+                return;
+            }
             $values[$fieldUuid] = $paymentIntent;
             $submitter->update(['values' => $values]);
         }, 3);

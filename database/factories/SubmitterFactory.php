@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Account;
 use App\Models\Submission;
 use App\Models\Submitter;
 use Illuminate\Database\Eloquent\Factories\Factory;

@@ -20,33 +20,33 @@ class SubmissionsApiTest extends TestCase
 
     private function createApiToken(?Account $account = null): array
     {
-        $account  = $account ?? Account::factory()->create();
-        $user     = User::factory()->create(['account_id' => $account->id]);
-        $token    = $user->createToken('vouch-api')->plainTextToken;
+        $account = $account ?? Account::factory()->create();
+        $user = User::factory()->create(['account_id' => $account->id]);
+        $token = $user->createToken('vouch-api')->plainTextToken;
 
         return ['account' => $account, 'user' => $user, 'rawToken' => $token];
     }
 
     private function authHeaders(string $rawToken): array
     {
-        return ['Authorization' => 'Bearer ' . $rawToken];
+        return ['Authorization' => 'Bearer '.$rawToken];
     }
 
     private function makeTemplate(Account $account, User $user): Template
     {
         $folder = TemplateFolder::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
         ]);
         $submitterUuid = (string) \Illuminate\Support\Str::uuid();
 
         return Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
             'submitters' => [['name' => 'First Party', 'uuid' => $submitterUuid]],
-            'fields'     => [],
-            'schema'     => [],
+            'fields' => [],
+            'schema' => [],
         ]);
     }
 
@@ -61,8 +61,8 @@ class SubmissionsApiTest extends TestCase
         $template = $this->makeTemplate($account, $user);
 
         Submission::factory()->count(2)->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
 
@@ -84,10 +84,10 @@ class SubmissionsApiTest extends TestCase
         $template = $this->makeTemplate($account, $user);
 
         Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
-            'archived_at'        => now(),
+            'archived_at' => now(),
         ]);
 
         $response = $this->withHeaders($this->authHeaders($rawToken))
@@ -120,7 +120,7 @@ class SubmissionsApiTest extends TestCase
         $response = $this->withHeaders($this->authHeaders($rawToken))
             ->postJson('/api/submissions', [
                 'template_id' => $template->id,
-                'submitters'  => [
+                'submitters' => [
                     ['email' => 'signer@example.com', 'name' => 'Signer One'],
                 ],
             ]);
@@ -130,12 +130,12 @@ class SubmissionsApiTest extends TestCase
 
         $this->assertDatabaseHas('submissions', [
             'template_id' => $template->id,
-            'account_id'  => $account->id,
-            'source'      => 'api',
+            'account_id' => $account->id,
+            'source' => 'api',
         ]);
 
         $this->assertDatabaseHas('submitters', [
-            'email'      => 'signer@example.com',
+            'email' => 'signer@example.com',
             'account_id' => $account->id,
         ]);
     }
@@ -151,7 +151,7 @@ class SubmissionsApiTest extends TestCase
         $this->withHeaders($this->authHeaders($rawToken))
             ->postJson('/api/submissions', [
                 'template_id' => $template->id,
-                'submitters'  => [
+                'submitters' => [
                     ['email' => 'signer@example.com', 'name' => 'Signer One'],
                 ],
             ]);
@@ -184,7 +184,7 @@ class SubmissionsApiTest extends TestCase
         $response = $this->withHeaders($this->authHeaders($rawToken))
             ->postJson('/api/submissions', [
                 'template_id' => $otherTemplate->id,
-                'submitters'  => [['email' => 'attacker@example.com']],
+                'submitters' => [['email' => 'attacker@example.com']],
             ]);
 
         $response->assertStatus(404);
@@ -199,16 +199,16 @@ class SubmissionsApiTest extends TestCase
     public function documents_endpoint_returns_documents_for_authenticated_account(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $template   = $this->makeTemplate($account, $user);
+        $template = $this->makeTemplate($account, $user);
         $submission = Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
 
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $account->id,
+            'account_id' => $account->id,
         ]);
 
         $response = $this->withHeaders($this->authHeaders($rawToken))
@@ -235,10 +235,10 @@ class SubmissionsApiTest extends TestCase
     public function destroy_archives_submission(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $template   = $this->makeTemplate($account, $user);
+        $template = $this->makeTemplate($account, $user);
         $submission = Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
 
@@ -256,10 +256,10 @@ class SubmissionsApiTest extends TestCase
     public function destroy_hard_deletes_with_permanently_flag(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $template   = $this->makeTemplate($account, $user);
+        $template = $this->makeTemplate($account, $user);
         $submission = Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
 

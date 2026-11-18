@@ -14,12 +14,12 @@ class WebhookDeliveryService
     public function dispatch(string $event, array $payload): void
     {
         $submissionId = $payload['submission_id'] ?? null;
-        if (!$submissionId) {
+        if (! $submissionId) {
             return;
         }
 
         $submission = Submission::query()->find($submissionId);
-        if (!$submission) {
+        if (! $submission) {
             return;
         }
 
@@ -49,7 +49,7 @@ class WebhookDeliveryService
             'X-Vouch-Event' => $webhookEvent->event_type,
         ];
 
-        if (!empty($webhookUrl->secret)) {
+        if (! empty($webhookUrl->secret)) {
             $headers['X-Vouch-Signature'] = hash_hmac('sha256', $body ?: '', $webhookUrl->secret);
         }
 

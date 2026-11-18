@@ -26,15 +26,15 @@ class ExpireSubmissionsCommandTest extends TestCase
     private function createOverdueSubmission(array $submitterOverrides = []): array
     {
         $submission = Submission::factory()->create([
-            'expire_at'   => now()->subHour(),
+            'expire_at' => now()->subHour(),
             'archived_at' => null,
         ]);
 
         $submitter = Submitter::factory()->create(array_merge([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ], $submitterOverrides));
 
         return [$submission, $submitter];
@@ -84,8 +84,8 @@ class ExpireSubmissionsCommandTest extends TestCase
         $this->artisan('vouch:expire-submissions')->assertSuccessful();
 
         Queue::assertPushed(DispatchWebhookEventJob::class, function ($job) use ($submission, $submitter) {
-            return $job->eventType    === 'submission.expired'
-                && $job->accountId   === $submission->account_id
+            return $job->eventType === 'submission.expired'
+                && $job->accountId === $submission->account_id
                 && $job->submitterId === $submitter->id
                 && $job->submissionId === $submission->id;
         });
@@ -101,14 +101,14 @@ class ExpireSubmissionsCommandTest extends TestCase
         Queue::fake();
 
         $submission = Submission::factory()->create([
-            'expire_at'   => null,
+            'expire_at' => null,
             'archived_at' => null,
         ]);
         $submitter = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $this->artisan('vouch:expire-submissions')->assertSuccessful();
@@ -127,14 +127,14 @@ class ExpireSubmissionsCommandTest extends TestCase
         Queue::fake();
 
         $submission = Submission::factory()->create([
-            'expire_at'   => now()->addDay(),
+            'expire_at' => now()->addDay(),
             'archived_at' => null,
         ]);
         $submitter = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $this->artisan('vouch:expire-submissions')->assertSuccessful();
@@ -153,24 +153,24 @@ class ExpireSubmissionsCommandTest extends TestCase
         Queue::fake();
 
         $submission = Submission::factory()->create([
-            'expire_at'   => now()->subHour(),
+            'expire_at' => now()->subHour(),
             'archived_at' => null,
         ]);
 
         $completed = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => now()->subDay(),
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => now()->subDay(),
+            'declined_at' => null,
         ]);
 
         // There must also be a pending submitter for the submission to be
         // picked up by the query (whereHas pending submitters).
         $pending = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $this->artisan('vouch:expire-submissions')->assertSuccessful();
@@ -191,24 +191,24 @@ class ExpireSubmissionsCommandTest extends TestCase
         Queue::fake();
 
         $submission = Submission::factory()->create([
-            'expire_at'   => now()->subHour(),
+            'expire_at' => now()->subHour(),
             'archived_at' => null,
         ]);
 
         $alreadyDeclinedAt = now()->subDays(2);
         $declined = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => $alreadyDeclinedAt,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => $alreadyDeclinedAt,
         ]);
 
         // A pending submitter so the submission is picked up by the query
         $pending = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $this->artisan('vouch:expire-submissions')->assertSuccessful();
@@ -230,14 +230,14 @@ class ExpireSubmissionsCommandTest extends TestCase
         Queue::fake();
 
         $submission = Submission::factory()->create([
-            'expire_at'   => now()->subHour(),
+            'expire_at' => now()->subHour(),
             'archived_at' => now()->subDay(),
         ]);
         $submitter = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $this->artisan('vouch:expire-submissions')->assertSuccessful();
@@ -256,22 +256,22 @@ class ExpireSubmissionsCommandTest extends TestCase
         Queue::fake();
 
         $submission = Submission::factory()->create([
-            'expire_at'   => now()->subHour(),
+            'expire_at' => now()->subHour(),
             'archived_at' => null,
         ]);
 
         $submitterA = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $submitterB = Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $submission->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $this->artisan('vouch:expire-submissions')->assertSuccessful();

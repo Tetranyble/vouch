@@ -2,44 +2,47 @@
 
 use App\Http\Controllers\Admin\AutocompleteController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\TemplatePreferencesController;
-use App\Http\Controllers\Admin\SubmissionsBulkController;
-use App\Http\Controllers\Admin\TemplateEmbedController;
-use App\Http\Controllers\Admin\SubmissionsExportController;
-use App\Http\Controllers\Admin\SubmissionsPerTemplateExportController;
-use App\Http\Controllers\Admin\SubmittersSendEmailController;
-use App\Http\Controllers\Admin\SubmittersResubmitController;
-use App\Http\Controllers\Admin\TemplateCloneController;
-use App\Http\Controllers\Admin\TemplateDocumentsController;
-use App\Http\Controllers\Admin\TemplateFoldersController;
 use App\Http\Controllers\Admin\Settings\AccountController as SettingsAccountController;
-use App\Http\Controllers\Admin\Settings\IntegrationsController;
-use App\Http\Controllers\Admin\Settings\TeamsController;
 use App\Http\Controllers\Admin\Settings\ApiTokensController;
 use App\Http\Controllers\Admin\Settings\EsignController;
+use App\Http\Controllers\Admin\Settings\IntegrationsController;
 use App\Http\Controllers\Admin\Settings\MfaController;
 use App\Http\Controllers\Admin\Settings\NotificationsController;
 use App\Http\Controllers\Admin\Settings\PersonalizationController;
 use App\Http\Controllers\Admin\Settings\SendPasswordResetController;
-use App\Http\Controllers\Admin\Settings\SmtpController;
 use App\Http\Controllers\Admin\Settings\SmsSettingsController;
+use App\Http\Controllers\Admin\Settings\SmtpController;
 use App\Http\Controllers\Admin\Settings\SsoController;
 use App\Http\Controllers\Admin\Settings\StorageController;
-use App\Http\Controllers\Admin\Settings\WebhookSecretController;
+use App\Http\Controllers\Admin\Settings\TeamsController;
 use App\Http\Controllers\Admin\Settings\WebhooksController;
+use App\Http\Controllers\Admin\Settings\WebhookSecretController;
+use App\Http\Controllers\Admin\SubmissionsBulkController;
 use App\Http\Controllers\Admin\SubmissionsController;
+use App\Http\Controllers\Admin\SubmissionsExportController;
+use App\Http\Controllers\Admin\SubmissionsPerTemplateExportController;
 use App\Http\Controllers\Admin\SubmissionsPreviewController;
-use App\Http\Controllers\Admin\TemplateBuilderController;
-use App\Http\Controllers\Admin\TemplateDetectFieldsController;
-use App\Http\Controllers\Admin\TemplateFormPreviewController;
-use App\Http\Controllers\Admin\TemplatePreviewController;
-use App\Http\Controllers\Admin\TemplateShareController;
+use App\Http\Controllers\Admin\SubmittersResubmitController;
+use App\Http\Controllers\Admin\SubmittersSendEmailController;
 use App\Http\Controllers\Admin\TemplateArchivedSubmissionsController;
+use App\Http\Controllers\Admin\TemplateBuilderController;
+use App\Http\Controllers\Admin\TemplateCloneController;
+use App\Http\Controllers\Admin\TemplateDetectFieldsController;
+use App\Http\Controllers\Admin\TemplateDocumentsController;
+use App\Http\Controllers\Admin\TemplateEmbedController;
+use App\Http\Controllers\Admin\TemplateFoldersController;
+use App\Http\Controllers\Admin\TemplateFormPreviewController;
+use App\Http\Controllers\Admin\TemplatePreferencesController;
+use App\Http\Controllers\Admin\TemplatePreviewController;
 use App\Http\Controllers\Admin\TemplatesController;
+use App\Http\Controllers\Admin\TemplateShareController;
 use App\Http\Controllers\Admin\UserSignaturesController;
 use App\Http\Controllers\Admin\VerifyPdfSignatureController;
+use App\Http\Controllers\Media\SignedMediaDownloadController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\StartFormController;
+use App\Http\Controllers\Public\SubmissionPreviewController;
+use App\Http\Controllers\Public\SubmitFormAttachmentsController;
 use App\Http\Controllers\Public\SubmitFormController;
 use App\Http\Controllers\Public\SubmitFormDeclineController;
 use App\Http\Controllers\Public\SubmitFormDownloadController;
@@ -49,18 +52,15 @@ use App\Http\Controllers\Public\SubmitFormInviteController;
 use App\Http\Controllers\Public\SubmitFormKbaController;
 use App\Http\Controllers\Public\SubmitFormSms2faController;
 use App\Http\Controllers\Public\SubmitFormStripeController;
-use App\Http\Controllers\Public\SubmitFormAttachmentsController;
 use App\Http\Controllers\Public\SubmitFormValuesController;
-use App\Http\Controllers\Public\SubmissionPreviewController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Media\SignedMediaDownloadController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('templates.index');
     }
+
     return Inertia::render('Welcome', [
         'auth' => ['user' => null],
     ]);
@@ -174,7 +174,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Autocomplete
     Route::get('autocomplete/submitters', [AutocompleteController::class, 'submitters'])->name('autocomplete.submitters');
     Route::get('autocomplete/folders', [AutocompleteController::class, 'folders'])->name('autocomplete.folders');
-
 
     // Admin: send password reset to a user
     Route::post('settings/account/users/{user}/password-reset', [SendPasswordResetController::class, 'store'])->name('settings.account.users.password-reset');

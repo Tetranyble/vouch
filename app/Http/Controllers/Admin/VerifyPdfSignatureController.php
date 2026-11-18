@@ -21,7 +21,7 @@ class VerifyPdfSignatureController extends Controller
         PdfSignatureVerificationService $service
     ): JsonResponse {
         $request->validate([
-            'files'   => 'required|array|min:1',
+            'files' => 'required|array|min:1',
             'files.*' => 'required|file|mimetypes:application/pdf',
         ]);
 
@@ -29,7 +29,7 @@ class VerifyPdfSignatureController extends Controller
 
         foreach ($request->file('files') as $file) {
             $content = file_get_contents($file->getRealPath());
-            $result  = $service->verify($content);
+            $result = $service->verify($content);
 
             $results[] = array_merge($result, [
                 'name' => $file->getClientOriginalName(),

@@ -15,8 +15,8 @@ abstract class ApiBaseController extends Controller
 
     protected function paginate($query, Request $request, int $default = 10): array
     {
-        $limit  = min((int) ($request->query('limit', $default)), 100);
-        $after  = $request->query('after');
+        $limit = min((int) ($request->query('limit', $default)), 100);
+        $after = $request->query('after');
         $before = $request->query('before');
 
         if ($after) {
@@ -24,12 +24,13 @@ abstract class ApiBaseController extends Controller
         } elseif ($before) {
             $query->where('id', '<', (int) $before)->orderBy('id', 'desc');
             $items = $query->limit($limit)->get()->reverse()->values();
+
             return [
-                'data'       => $items,
+                'data' => $items,
                 'pagination' => [
-                    'count'  => $items->count(),
-                    'next'   => $items->last()?->id,
-                    'prev'   => $items->first()?->id,
+                    'count' => $items->count(),
+                    'next' => $items->last()?->id,
+                    'prev' => $items->first()?->id,
                 ],
             ];
         }
@@ -37,11 +38,11 @@ abstract class ApiBaseController extends Controller
         $items = $query->orderBy('id', 'desc')->limit($limit)->get();
 
         return [
-            'data'       => $items,
+            'data' => $items,
             'pagination' => [
-                'count'  => $items->count(),
-                'next'   => $items->last()?->id,
-                'prev'   => $items->first()?->id,
+                'count' => $items->count(),
+                'next' => $items->last()?->id,
+                'prev' => $items->first()?->id,
             ],
         ];
     }

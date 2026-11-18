@@ -13,9 +13,7 @@ class GenerateSubmissionPdf implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(private readonly string $submissionId)
-    {
-    }
+    public function __construct(private readonly string $submissionId) {}
 
     public function handle(PdfGenerationService $pdfGenerationService): void
     {

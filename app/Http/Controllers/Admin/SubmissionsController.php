@@ -63,17 +63,17 @@ class SubmissionsController extends Controller
             ->orderBy('event_timestamp')
             ->get()
             ->map(fn ($e) => [
-                'id'              => $e->id,
-                'event_type'      => $e->event_type,
+                'id' => $e->id,
+                'event_type' => $e->event_type,
                 'event_timestamp' => $e->event_timestamp,
-                'data'            => $e->data ?? [],
+                'data' => $e->data ?? [],
                 'submitter_email' => $e->submitter?->email,
-                'submitter_name'  => $e->submitter?->name,
+                'submitter_name' => $e->submitter?->name,
             ]);
 
         return Inertia::render('Admin/Submissions/Show', [
             'submission' => $this->serializeSubmission($submission, detailed: true),
-            'events'     => $events,
+            'events' => $events,
         ]);
     }
 
@@ -127,11 +127,11 @@ class SubmissionsController extends Controller
         $template = Template::forAccount($request->user()->account_id)->findOrFail($templateId);
 
         $action->execute(
-            template:        $template,
-            creator:         $request->user(),
+            template: $template,
+            creator: $request->user(),
             submitterInputs: $request->allSubmitterInputs(),
-            source:          'invite',
-            expireAt:        $request->input('expire_at'),
+            source: 'invite',
+            expireAt: $request->input('expire_at'),
             submittersOrder: $request->boolean('preserve_order') ? 'preserved' : 'random',
         );
 
@@ -155,6 +155,7 @@ class SubmissionsController extends Controller
             'template_name' => $submission->template?->name,
             'submitters' => $submission->submitters->map(function ($s) use ($submission) {
                 $roleNames = collect($submission->template_submitters ?? [])->keyBy('uuid');
+
                 return [
                     'id' => $s->id,
                     'slug' => $s->slug,

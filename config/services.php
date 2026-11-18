@@ -36,21 +36,21 @@ return [
     ],
 
     'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
     'stripe' => [
-        'key'            => env('STRIPE_KEY'),
-        'secret'         => env('STRIPE_SECRET'),
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
     'twilio' => [
         'account_sid' => env('TWILIO_ACCOUNT_SID'),
-        'auth_token'  => env('TWILIO_AUTH_TOKEN'),
-        'from'        => env('TWILIO_FROM_NUMBER'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'from' => env('TWILIO_FROM_NUMBER'),
     ],
 
 ];

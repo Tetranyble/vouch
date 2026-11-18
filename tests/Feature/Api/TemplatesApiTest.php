@@ -22,9 +22,9 @@ class TemplatesApiTest extends TestCase
      */
     private function createApiToken(?Account $account = null): array
     {
-        $account  = $account ?? Account::factory()->create();
-        $user     = User::factory()->create(['account_id' => $account->id]);
-        $token    = $user->createToken('vouch-api')->plainTextToken;
+        $account = $account ?? Account::factory()->create();
+        $user = User::factory()->create(['account_id' => $account->id]);
+        $token = $user->createToken('vouch-api')->plainTextToken;
         $rawToken = $token;
 
         return ['account' => $account, 'user' => $user, 'rawToken' => $rawToken];
@@ -32,7 +32,7 @@ class TemplatesApiTest extends TestCase
 
     private function authHeaders(string $rawToken): array
     {
-        return ['Authorization' => 'Bearer ' . $rawToken];
+        return ['Authorization' => 'Bearer '.$rawToken];
     }
 
     // -------------------------------------------------------------------------
@@ -69,8 +69,8 @@ class TemplatesApiTest extends TestCase
 
         Template::factory()->count(3)->create([
             'account_id' => $account->id,
-            'author_id'  => $author->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $author->id,
+            'folder_id' => $folder->id,
         ]);
 
         // Template belonging to a different account — must NOT appear in results
@@ -92,9 +92,9 @@ class TemplatesApiTest extends TestCase
         $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
 
         Template::factory()->create([
-            'account_id'  => $account->id,
-            'author_id'   => $author->id,
-            'folder_id'   => $folder->id,
+            'account_id' => $account->id,
+            'author_id' => $author->id,
+            'folder_id' => $folder->id,
             'archived_at' => now(),
         ]);
 
@@ -121,9 +121,9 @@ class TemplatesApiTest extends TestCase
             ->assertJsonFragment(['name' => 'My New Template']);
 
         $this->assertDatabaseHas('templates', [
-            'name'       => 'My New Template',
+            'name' => 'My New Template',
             'account_id' => $account->id,
-            'source'     => 'api',
+            'source' => 'api',
         ]);
     }
 
@@ -147,11 +147,11 @@ class TemplatesApiTest extends TestCase
     public function show_returns_template_data_for_own_account(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $folder   = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
         $template = Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
         ]);
 
         $response = $this->withHeaders($this->authHeaders($rawToken))
@@ -183,12 +183,12 @@ class TemplatesApiTest extends TestCase
     public function update_changes_template_name(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $folder   = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
         $template = Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
-            'name'       => 'Old Name',
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
+            'name' => 'Old Name',
         ]);
 
         $response = $this->withHeaders($this->authHeaders($rawToken))
@@ -198,7 +198,7 @@ class TemplatesApiTest extends TestCase
             ->assertJsonFragment(['name' => 'Updated Name']);
 
         $this->assertDatabaseHas('templates', [
-            'id'   => $template->id,
+            'id' => $template->id,
             'name' => 'Updated Name',
         ]);
     }
@@ -223,11 +223,11 @@ class TemplatesApiTest extends TestCase
     public function destroy_archives_the_template(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $folder   = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
         $template = Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
         ]);
 
         $response = $this->withHeaders($this->authHeaders($rawToken))
@@ -245,11 +245,11 @@ class TemplatesApiTest extends TestCase
     public function destroy_hard_deletes_with_permanently_flag(): void
     {
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
-        $folder   = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
         $template = Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
         ]);
 
         $this->withHeaders($this->authHeaders($rawToken))
@@ -269,6 +269,7 @@ class TemplatesApiTest extends TestCase
 
         $response->assertStatus(404);
     }
+
     #[Test]
     public function update_rejects_schema_fields_with_the_wrong_data_type(): void
     {
@@ -280,5 +281,4 @@ class TemplatesApiTest extends TestCase
             ->assertStatus(422)
             ->assertJsonValidationErrors(['fields']);
     }
-
 }

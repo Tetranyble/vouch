@@ -16,7 +16,7 @@ class DynamicMailService
             ->where('key', self::SMTP_KEY)
             ->first();
 
-        if (!$config || empty($config->value['host'])) {
+        if (! $config || empty($config->value['host'])) {
             return;
         }
 
@@ -27,7 +27,7 @@ class DynamicMailService
         Config::set('mail.mailers.smtp.port', (int) ($settings['port'] ?? 587));
         Config::set('mail.mailers.smtp.username', $settings['username'] ?? null);
         Config::set('mail.mailers.smtp.password', $settings['password'] ?? null);
-        Config::set('mail.mailers.smtp.encryption', match($settings['encryption'] ?? 'tls') {
+        Config::set('mail.mailers.smtp.encryption', match ($settings['encryption'] ?? 'tls') {
             'tls' => 'tls',
             'ssl' => 'ssl',
             default => null,

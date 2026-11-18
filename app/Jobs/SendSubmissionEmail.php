@@ -17,13 +17,13 @@ class SendSubmissionEmail implements ShouldQueue
         private readonly string $submissionId,
         private readonly string $email,
         private readonly string $type
-    ) {
-    }
+    ) {}
 
     public function handle(EmailDispatchService $emailDispatchService): void
     {
         if ($this->type === 'completed') {
             $emailDispatchService->sendSubmissionCompleted($this->submissionId, $this->email);
+
             return;
         }
 

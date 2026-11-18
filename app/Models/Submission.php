@@ -131,10 +131,10 @@ class Submission extends Model
     public function scopeSearch(Builder $query, string $term): Builder
     {
         return $query->where(function ($q) use ($term) {
-            $q->where('name', 'like', '%' . $term . '%')
+            $q->where('name', 'like', '%'.$term.'%')
                 ->orWhereHas('submitters', function ($sq) use ($term) {
-                    $sq->where('email', 'like', '%' . $term . '%')
-                        ->orWhere('name', 'like', '%' . $term . '%');
+                    $sq->where('email', 'like', '%'.$term.'%')
+                        ->orWhere('name', 'like', '%'.$term.'%');
                 });
         });
     }
@@ -160,6 +160,7 @@ class Submission extends Model
         if ($submitters->some(fn ($s) => $s->declined_at)) {
             return 'declined';
         }
+
         return 'pending';
     }
 }

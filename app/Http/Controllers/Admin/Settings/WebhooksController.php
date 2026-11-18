@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin\Settings;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendTestWebhookJob;
 use App\Models\Submitter;
-use App\Models\WebhookUrl;
 use App\Models\WebhookEvent;
+use App\Models\WebhookUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -46,7 +46,7 @@ class WebhooksController extends Controller
         $request->validate([
             'url' => 'required|url|max:1000',
             'events' => 'nullable|array',
-            'events.*' => 'string|in:' . implode(',', self::AVAILABLE_EVENTS),
+            'events.*' => 'string|in:'.implode(',', self::AVAILABLE_EVENTS),
         ]);
 
         $user = $request->user();
@@ -66,7 +66,7 @@ class WebhooksController extends Controller
         $request->validate([
             'url' => 'required|url|max:1000',
             'events' => 'nullable|array',
-            'events.*' => 'string|in:' . implode(',', self::AVAILABLE_EVENTS),
+            'events.*' => 'string|in:'.implode(',', self::AVAILABLE_EVENTS),
         ]);
 
         $user = $request->user();
@@ -100,7 +100,7 @@ class WebhooksController extends Controller
             ->orderByDesc('id')
             ->first();
 
-        if (!$submitter) {
+        if (! $submitter) {
             return redirect()->back()->with('error', 'Complete at least one submission first to generate a test payload.');
         }
 

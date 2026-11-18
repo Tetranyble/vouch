@@ -11,14 +11,14 @@ class TemplateEmbedController extends Controller
 {
     public function show(Request $request, string $id)
     {
-        $user     = $request->user();
+        $user = $request->user();
         $template = Template::forAccount($user->account_id)->findOrFail($id);
 
         $shareUrl = route('start-form.show', $template->slug);
 
         return Inertia::render('Admin/Templates/Embed', [
             'template' => [
-                'id'   => $template->id,
+                'id' => $template->id,
                 'name' => $template->name,
                 'slug' => $template->slug,
             ],

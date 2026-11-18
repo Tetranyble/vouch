@@ -28,7 +28,7 @@ class EmailMessageFactory extends Factory
             ])->id,
             'subject' => $subject,
             'body' => $body,
-            'sha1' => sha1($subject . $body),
+            'sha1' => sha1($subject.$body),
         ];
     }
 }

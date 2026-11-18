@@ -14,16 +14,16 @@ class CloneTemplateAction
         abort_unless($source->account_id === $clonedBy->account_id, 403, 'Template belongs to another account.');
 
         $clone = Template::create([
-            'slug'        => Str::random(14),
-            'name'        => $source->name . ' (Copy)',
-            'schema'      => $source->schema,
-            'fields'      => $source->fields,
-            'submitters'  => $source->submitters,
-            'documents'   => $source->documents,
-            'author_id'   => $clonedBy->id,
-            'account_id'  => $clonedBy->account_id,
-            'folder_id'   => $source->folder_id,
-            'source'      => 'clone',
+            'slug' => Str::random(14),
+            'name' => $source->name.' (Copy)',
+            'schema' => $source->schema,
+            'fields' => $source->fields,
+            'submitters' => $source->submitters,
+            'documents' => $source->documents,
+            'author_id' => $clonedBy->id,
+            'account_id' => $clonedBy->account_id,
+            'folder_id' => $source->folder_id,
+            'source' => 'clone',
             'preferences' => $source->preferences ?? [],
             'shared_link' => false,
         ]);

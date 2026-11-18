@@ -8,17 +8,17 @@ use App\Jobs\GenerateSubmissionPdfJob;
 use App\Jobs\SendSubmissionCompletedJob;
 use App\Models\Account;
 use App\Models\CompletedDocument;
-use App\Services\DocumentStorage;
-use App\Support\SubmitterDownloadLink;
-use Illuminate\Support\Facades\URL;
 use App\Models\Submission;
 use App\Models\Submitter;
 use App\Models\Template;
 use App\Models\TemplateFolder;
 use App\Models\User;
+use App\Services\DocumentStorage;
+use App\Support\SubmitterDownloadLink;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\URL;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -31,38 +31,38 @@ class SubmitFormTest extends TestCase
      */
     private function makeSubmitter(array $submitterOverrides = []): Submitter
     {
-        $account   = Account::factory()->create();
-        $author    = User::factory()->create(['account_id' => $account->id]);
-        $folder    = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
+        $account = Account::factory()->create();
+        $author = User::factory()->create(['account_id' => $account->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
         $submitterUuid = (string) \Illuminate\Support\Str::uuid();
 
         $template = Template::factory()->create([
-            'account_id'  => $account->id,
-            'author_id'   => $author->id,
-            'folder_id'   => $folder->id,
-            'fields'      => [],
-            'schema'      => [],
-            'documents'   => [],
-            'submitters'  => [['name' => 'First Party', 'uuid' => $submitterUuid]],
+            'account_id' => $account->id,
+            'author_id' => $author->id,
+            'folder_id' => $folder->id,
+            'fields' => [],
+            'schema' => [],
+            'documents' => [],
+            'submitters' => [['name' => 'First Party', 'uuid' => $submitterUuid]],
         ]);
 
         $submission = Submission::factory()->create([
-            'template_id'         => $template->id,
-            'account_id'          => $account->id,
-            'created_by_user_id'  => $author->id,
-            'template_fields'     => [],
-            'template_schema'     => [],
+            'template_id' => $template->id,
+            'account_id' => $account->id,
+            'created_by_user_id' => $author->id,
+            'template_fields' => [],
+            'template_schema' => [],
             'template_submitters' => $template->submitters,
         ]);
 
         return Submitter::factory()->create(array_merge([
             'submission_id' => $submission->id,
-            'account_id'    => $account->id,
-            'uuid'          => $submitterUuid,
-            'order'         => 0,
-            'values'        => [],
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $account->id,
+            'uuid' => $submitterUuid,
+            'order' => 0,
+            'values' => [],
+            'completed_at' => null,
+            'declined_at' => null,
         ], $submitterOverrides));
     }
 
@@ -78,13 +78,12 @@ class SubmitFormTest extends TestCase
         $response = $this->get("/s/{$submitter->slug}");
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) =>
-            $page->component('Public/SubmitForm/Show')
-                ->has('submitter')
-                ->where('submitter.slug', $submitter->slug)
-                ->has('fields')
-                ->has('documents')
-                ->has('isCompleted')
+        $response->assertInertia(fn ($page) => $page->component('Public/SubmitForm/Show')
+            ->has('submitter')
+            ->where('submitter.slug', $submitter->slug)
+            ->has('fields')
+            ->has('documents')
+            ->has('isCompleted')
         );
     }
 
@@ -104,7 +103,7 @@ class SubmitFormTest extends TestCase
         $this->get("/s/{$submitter->slug}");
 
         $this->assertDatabaseHas('submitters', [
-            'id'        => $submitter->id,
+            'id' => $submitter->id,
             'opened_at' => now()->format('Y-m-d H:i:s'),
         ]);
     }
@@ -117,8 +116,7 @@ class SubmitFormTest extends TestCase
         $response = $this->get("/s/{$submitter->slug}");
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) =>
-            $page->where('isCompleted', true)
+        $response->assertInertia(fn ($page) => $page->where('isCompleted', true)
         );
     }
 
@@ -143,7 +141,7 @@ class SubmitFormTest extends TestCase
         $response->assertRedirect("/s/{$submitter->slug}");
 
         $this->assertDatabaseHas('submitters', [
-            'id'     => $submitter->id,
+            'id' => $submitter->id,
             'values' => json_encode(['field_1' => 'test value']),
         ]);
 
@@ -234,7 +232,7 @@ class SubmitFormTest extends TestCase
         Queue::fake();
 
         $alreadyCompleted = now()->subHour();
-        $submitter        = $this->makeSubmitter(['completed_at' => $alreadyCompleted]);
+        $submitter = $this->makeSubmitter(['completed_at' => $alreadyCompleted]);
 
         $response = $this->put("/s/{$submitter->slug}", ['values' => ['field' => 'new']]);
 
@@ -242,7 +240,7 @@ class SubmitFormTest extends TestCase
 
         // Values should NOT have changed (completed_at guard)
         $this->assertDatabaseHas('submitters', [
-            'id'         => $submitter->id,
+            'id' => $submitter->id,
             'completed_at' => $alreadyCompleted->format('Y-m-d H:i:s'),
         ]);
 
@@ -263,7 +261,7 @@ class SubmitFormTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'slug'   => $submitter->slug,
+                'slug' => $submitter->slug,
                 'values' => ['field_a' => 'hello'],
             ]);
     }

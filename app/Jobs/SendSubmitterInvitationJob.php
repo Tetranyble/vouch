@@ -17,6 +17,7 @@ class SendSubmitterInvitationJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 60;
 
     public function __construct(
@@ -29,7 +30,7 @@ class SendSubmitterInvitationJob implements ShouldQueue
     {
         $submitter = Submitter::findOrFail($this->submitterId);
 
-        if (!$submitter->email) {
+        if (! $submitter->email) {
             return;
         }
 

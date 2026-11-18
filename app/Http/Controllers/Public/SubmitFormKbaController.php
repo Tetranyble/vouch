@@ -25,7 +25,7 @@ class SubmitFormKbaController extends Controller
         }
 
         return response()->json([
-            'verified'  => false,
+            'verified' => false,
             'questions' => $this->getQuestions($submitter),
         ]);
     }
@@ -35,9 +35,9 @@ class SubmitFormKbaController extends Controller
         $request->validate(['answers' => 'required|array']);
 
         $submitter = Submitter::where('slug', $slug)->firstOrFail();
-        $expected  = Cache::get("kba_answers:{$slug}");
+        $expected = Cache::get("kba_answers:{$slug}");
 
-        if (!$expected) {
+        if (! $expected) {
             return response()->json(['error' => 'KBA session expired. Please try again.'], 422);
         }
 
@@ -67,28 +67,28 @@ class SubmitFormKbaController extends Controller
 
         $questions = [
             [
-                'id'      => 0,
-                'text'    => 'What is the name of the street you grew up on?',
+                'id' => 0,
+                'text' => 'What is the name of the street you grew up on?',
                 'options' => ['Oak Street', 'Elm Avenue', 'Maple Drive', 'Pine Road'],
-                'answer'  => 'Oak Street',
+                'answer' => 'Oak Street',
             ],
             [
-                'id'      => 1,
-                'text'    => 'Which of these cities have you lived in?',
+                'id' => 1,
+                'text' => 'Which of these cities have you lived in?',
                 'options' => ['Chicago', 'Dallas', 'Phoenix', 'None of the above'],
-                'answer'  => 'None of the above',
+                'answer' => 'None of the above',
             ],
             [
-                'id'      => 2,
-                'text'    => 'What was the make of your first car?',
+                'id' => 2,
+                'text' => 'What was the make of your first car?',
                 'options' => ['Toyota', 'Ford', 'Honda', 'Chevrolet'],
-                'answer'  => 'Toyota',
+                'answer' => 'Toyota',
             ],
             [
-                'id'      => 3,
-                'text'    => 'Which of these phone numbers have you used?',
+                'id' => 3,
+                'text' => 'Which of these phone numbers have you used?',
                 'options' => ['555-1234', '555-5678', '555-9012', 'None of the above'],
-                'answer'  => 'None of the above',
+                'answer' => 'None of the above',
             ],
         ];
 
@@ -99,8 +99,8 @@ class SubmitFormKbaController extends Controller
         );
 
         return collect($questions)->map(fn ($q) => [
-            'id'      => $q['id'],
-            'text'    => $q['text'],
+            'id' => $q['id'],
+            'text' => $q['text'],
             'options' => $q['options'],
         ])->toArray();
     }

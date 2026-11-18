@@ -98,7 +98,7 @@ class Template extends Model
 
     public function scopeSearch(Builder $query, string $term): Builder
     {
-        return $query->where('name', 'like', '%' . $term . '%');
+        return $query->where('name', 'like', '%'.$term.'%');
     }
 
     // Accessors

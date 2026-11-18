@@ -57,15 +57,15 @@ class SubmissionsController extends Controller
 
     public function store(CreateSubmissionRequest $request, CreateSubmissionAction $action): JsonResponse
     {
-        $user     = $request->user();
+        $user = $request->user();
         $template = Template::forAccount($user->account_id)->findOrFail($request->input('template_id'));
 
         $submission = $action->execute(
-            template:        $template,
-            creator:         $user,
+            template: $template,
+            creator: $user,
             submitterInputs: $request->submitterInputs(),
-            source:          'api',
-            expireAt:        $request->input('expire_at'),
+            source: 'api',
+            expireAt: $request->input('expire_at'),
         );
 
         return response()->json($this->serialize($submission, detailed: true), 201);
@@ -73,15 +73,15 @@ class SubmissionsController extends Controller
 
     public function storeForTemplate(CreateSubmissionRequest $request, string $templateId, CreateSubmissionAction $action): JsonResponse
     {
-        $user     = $request->user();
+        $user = $request->user();
         $template = Template::forAccount($user->account_id)->findOrFail($templateId);
 
         $submission = $action->execute(
-            template:        $template,
-            creator:         $user,
+            template: $template,
+            creator: $user,
             submitterInputs: $request->submitterInputs(),
-            source:          'api',
-            expireAt:        $request->input('expire_at'),
+            source: 'api',
+            expireAt: $request->input('expire_at'),
         );
 
         return response()->json($this->serialize($submission, detailed: true), 201);

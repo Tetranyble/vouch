@@ -36,10 +36,10 @@ class SubmissionsTest extends TestCase
     {
         Queue::fake();
 
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
-        $mine   = Submission::factory()->create(['account_id' => $user->account_id]);
+        $mine = Submission::factory()->create(['account_id' => $user->account_id]);
         $theirs = Submission::factory()->create(['account_id' => $other->account_id]);
 
         $response = $this->actingAs($user)->get(route('submissions.index'));
@@ -56,7 +56,7 @@ class SubmissionsTest extends TestCase
     #[Test]
     public function it_returns_404_when_accessing_another_accounts_submission(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $submission = Submission::factory()->create(['account_id' => $other->account_id]);
@@ -75,10 +75,10 @@ class SubmissionsTest extends TestCase
     {
         Queue::fake();
 
-        $user       = User::factory()->create();
-        $template   = Template::factory()->create(['account_id' => $user->account_id]);
+        $user = User::factory()->create();
+        $template = Template::factory()->create(['account_id' => $user->account_id]);
         $submission = Submission::factory()->create([
-            'account_id'  => $user->account_id,
+            'account_id' => $user->account_id,
             'template_id' => $template->id,
             'archived_at' => null,
         ]);
@@ -96,7 +96,7 @@ class SubmissionsTest extends TestCase
     {
         Queue::fake();
 
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $submission = Submission::factory()->create(['account_id' => $other->account_id]);
@@ -115,9 +115,9 @@ class SubmissionsTest extends TestCase
     {
         Queue::fake();
 
-        $user       = User::factory()->create();
+        $user = User::factory()->create();
         $submission = Submission::factory()->create([
-            'account_id'  => $user->account_id,
+            'account_id' => $user->account_id,
             'archived_at' => now()->subHour(),
         ]);
 
@@ -131,11 +131,11 @@ class SubmissionsTest extends TestCase
     #[Test]
     public function it_cannot_restore_another_accounts_submission(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $other = User::factory()->create();
 
         $submission = Submission::factory()->create([
-            'account_id'  => $other->account_id,
+            'account_id' => $other->account_id,
             'archived_at' => now()->subHour(),
         ]);
 
@@ -158,25 +158,25 @@ class SubmissionsTest extends TestCase
         // Completed submission — every submitter has completed_at set
         $completed = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Completed Sub',
+            'name' => 'Completed Sub',
         ]);
         Submitter::factory()->create([
             'submission_id' => $completed->id,
-            'account_id'    => $user->account_id,
-            'completed_at'  => now(),
-            'declined_at'   => null,
+            'account_id' => $user->account_id,
+            'completed_at' => now(),
+            'declined_at' => null,
         ]);
 
         // Pending submission — submitter has no completed_at
         $pending = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Pending Sub',
+            'name' => 'Pending Sub',
         ]);
         Submitter::factory()->create([
             'submission_id' => $pending->id,
-            'account_id'    => $user->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $user->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         $response = $this->actingAs($user)
@@ -196,24 +196,24 @@ class SubmissionsTest extends TestCase
 
         $declined = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Declined Sub',
+            'name' => 'Declined Sub',
         ]);
         Submitter::factory()->create([
             'submission_id' => $declined->id,
-            'account_id'    => $user->account_id,
-            'declined_at'   => now(),
-            'completed_at'  => null,
+            'account_id' => $user->account_id,
+            'declined_at' => now(),
+            'completed_at' => null,
         ]);
 
         $pending = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Pending Sub',
+            'name' => 'Pending Sub',
         ]);
         Submitter::factory()->create([
             'submission_id' => $pending->id,
-            'account_id'    => $user->account_id,
-            'declined_at'   => null,
-            'completed_at'  => null,
+            'account_id' => $user->account_id,
+            'declined_at' => null,
+            'completed_at' => null,
         ]);
 
         $response = $this->actingAs($user)
@@ -233,25 +233,25 @@ class SubmissionsTest extends TestCase
 
         $pending = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Pending Sub',
+            'name' => 'Pending Sub',
         ]);
         Submitter::factory()->create([
             'submission_id' => $pending->id,
-            'account_id'    => $user->account_id,
-            'completed_at'  => null,
-            'declined_at'   => null,
+            'account_id' => $user->account_id,
+            'completed_at' => null,
+            'declined_at' => null,
         ]);
 
         // A completed one that should be excluded
         $completed = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Completed Sub',
+            'name' => 'Completed Sub',
         ]);
         Submitter::factory()->create([
             'submission_id' => $completed->id,
-            'account_id'    => $user->account_id,
-            'completed_at'  => now(),
-            'declined_at'   => null,
+            'account_id' => $user->account_id,
+            'completed_at' => now(),
+            'declined_at' => null,
         ]);
 
         $response = $this->actingAs($user)
@@ -275,22 +275,22 @@ class SubmissionsTest extends TestCase
 
         $targetSubmission = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Target Doc',
+            'name' => 'Target Doc',
         ]);
         Submitter::factory()->create([
             'submission_id' => $targetSubmission->id,
-            'account_id'    => $user->account_id,
-            'email'         => 'findme@example.com',
+            'account_id' => $user->account_id,
+            'email' => 'findme@example.com',
         ]);
 
         $otherSubmission = Submission::factory()->create([
             'account_id' => $user->account_id,
-            'name'       => 'Other Doc',
+            'name' => 'Other Doc',
         ]);
         Submitter::factory()->create([
             'submission_id' => $otherSubmission->id,
-            'account_id'    => $user->account_id,
-            'email'         => 'nobody@example.com',
+            'account_id' => $user->account_id,
+            'email' => 'nobody@example.com',
         ]);
 
         $response = $this->actingAs($user)

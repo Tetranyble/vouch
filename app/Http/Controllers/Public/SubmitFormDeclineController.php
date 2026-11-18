@@ -9,8 +9,8 @@ use App\Mail\DeclinedSubmissionMail;
 use App\Models\SubmissionEvent;
 use App\Models\Submitter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class SubmitFormDeclineController extends Controller
 {
@@ -41,6 +41,7 @@ class SubmitFormDeclineController extends Controller
                 'event_timestamp' => now(),
                 'data' => ['reason' => $reason, 'ip' => $request->ip()],
             ]);
+
             return $submitter;
         }, 3);
 
@@ -48,6 +49,7 @@ class SubmitFormDeclineController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Already processed'], 422);
             }
+
             return redirect()->route('submit-form.show', $slug);
         }
         $submitter->load(['submission.template', 'submission.createdByUser']);
@@ -55,9 +57,9 @@ class SubmitFormDeclineController extends Controller
         DispatchWebhookEventJob::dispatch('form.declined', $submitter->account_id, $submitter->id);
 
         // Notify the submission owner / template author
-        $submission    = $submitter->submission;
-        $notifyUser    = $submission->createdByUser ?? $submission->template?->author;
-        $documentName  = $submission->name ?? $submission->template?->name ?? 'Document';
+        $submission = $submitter->submission;
+        $notifyUser = $submission->createdByUser ?? $submission->template?->author;
+        $documentName = $submission->name ?? $submission->template?->name ?? 'Document';
 
         if ($notifyUser?->email) {
             Mail::to($notifyUser->email)->queue(
@@ -87,7 +89,7 @@ class SubmitFormDeclineController extends Controller
 
                 if ($nextOrder !== null) {
                     $templateName = $submission->template?->name ?? 'Document';
-                    $senderName   = $submission->createdByUser?->full_name ?? config('app.name');
+                    $senderName = $submission->createdByUser?->full_name ?? config('app.name');
 
                     foreach ($allSubmitters->where('order', $nextOrder)->whereNull('sent_at') as $next) {
                         $marked = Submitter::whereKey($next->id)->whereNull('sent_at')->update(['sent_at' => now()]);
@@ -102,6 +104,7 @@ class SubmitFormDeclineController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['slug' => $slug, 'status' => 'declined']);
         }
+
         return redirect()->route('submit-form.show', $slug);
     }
 }

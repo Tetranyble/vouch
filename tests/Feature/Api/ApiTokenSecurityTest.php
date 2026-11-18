@@ -47,6 +47,7 @@ class ApiTokenSecurityTest extends TestCase
         $user->tokens()->delete();
         $this->withToken($raw)->getJson('/api/users/me')->assertUnauthorized();
     }
+
     #[Test]
     public function archived_users_cannot_use_previous_api_tokens(): void
     {

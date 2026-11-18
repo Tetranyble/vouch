@@ -23,6 +23,7 @@ use ZipArchive;
 final class SubmitFormDownloadController extends Controller
 {
     private const MAX_ZIP_BYTES = 64 * 1024 * 1024;
+
     private const MAX_ZIP_DOCUMENTS = 50;
 
     public function __construct(private readonly DocumentStorage $documents) {}
@@ -47,8 +48,7 @@ final class SubmitFormDownloadController extends Controller
         $accountId = (int) $submitter->account_id;
         $docs = $submitter->completedDocuments;
 
-        $originals = $docs->filter(fn (CompletedDocument $doc): bool =>
-            $doc->storage_path && ! in_array($doc->filename, ['audit_trail.pdf', 'combined.pdf'], true)
+        $originals = $docs->filter(fn (CompletedDocument $doc): bool => $doc->storage_path && ! in_array($doc->filename, ['audit_trail.pdf', 'combined.pdf'], true)
         )->values();
 
         if ($originals->count() === 1) {
@@ -67,6 +67,7 @@ final class SubmitFormDownloadController extends Controller
         // Do not perform expensive PDF assembly on a publicly reachable GET request.
         $estimatedSize = $originals->sum(function (CompletedDocument $doc) use ($accountId): int {
             abort_unless($this->documents->exists($doc->storage_path, $accountId), 404);
+
             return $this->documents->size($doc->storage_path, $accountId);
         });
         abort_if($estimatedSize > self::MAX_ZIP_BYTES, 413, 'Download exceeds the ZIP size limit.');
@@ -75,7 +76,7 @@ final class SubmitFormDownloadController extends Controller
         if ($tmpZip === false) {
             throw new RuntimeException('Unable to create a temporary ZIP.');
         }
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             @unlink($tmpZip);
             throw new RuntimeException('Unable to open temporary ZIP.');
@@ -111,6 +112,7 @@ final class SubmitFormDownloadController extends Controller
         abort_unless($doc->storage_path && $this->documents->exists($doc->storage_path, $accountId), 404);
 
         $filename = $this->safeFilename($doc->filename, 'signed-document.pdf');
+
         return response($this->documents->get($doc->storage_path, $accountId), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_INLINE, $filename),
@@ -123,6 +125,7 @@ final class SubmitFormDownloadController extends Controller
     private function safeFilename(?string $filename, string $fallback): string
     {
         $safe = preg_replace('/[^A-Za-z0-9._-]/', '_', basename(str_replace('\\', '/', $filename ?? '')));
+
         return ($safe === '' || $safe === '.' || $safe === '..') ? $fallback : $safe;
     }
 }

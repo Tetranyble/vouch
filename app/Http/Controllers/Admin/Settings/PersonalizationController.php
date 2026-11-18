@@ -16,7 +16,7 @@ class PersonalizationController extends Controller
 
     public function index(Request $request)
     {
-        $user    = $request->user();
+        $user = $request->user();
         $configs = AccountConfig::where('account_id', $user->account_id)
             ->whereIn('key', self::KEYS)
             ->pluck('value', 'key');
@@ -31,12 +31,12 @@ class PersonalizationController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'logo'                   => 'nullable|string',
-            'primary_color'          => 'nullable|string|max:7',
-            'custom_css'             => 'nullable|string|max:10000',
-            'completed_message'      => 'nullable|string|max:1000',
+            'logo' => 'nullable|string',
+            'primary_color' => 'nullable|string|max:7',
+            'custom_css' => 'nullable|string|max:10000',
+            'completed_message' => 'nullable|string|max:1000',
             'completed_button_label' => 'nullable|string|max:100',
-            'completed_button_url'   => 'nullable|url',
+            'completed_button_url' => 'nullable|url',
         ]);
 
         foreach (self::KEYS as $key) {

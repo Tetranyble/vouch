@@ -67,6 +67,7 @@ class StartFormController extends Controller
                 ]);
                 $firstSubmitter ??= $submitter;
             }
+
             return $firstSubmitter;
         });
 

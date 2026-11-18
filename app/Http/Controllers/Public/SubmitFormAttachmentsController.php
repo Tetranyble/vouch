@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Facades\DocumentStorage;
 use App\Http\Controllers\Controller;
 use App\Models\Submitter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Facades\DocumentStorage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SubmitFormAttachmentsController extends Controller
 {
@@ -53,10 +53,10 @@ class SubmitFormAttachmentsController extends Controller
         }
 
         return response()->json([
-            'uuid'         => $uuid,
-            'filename'     => $file->getClientOriginalName(),
+            'uuid' => $uuid,
+            'filename' => $file->getClientOriginalName(),
             'content_type' => $file->getMimeType(),
-            'url'          => route('submit-form.attachments.show', [$slug, $uuid]),
+            'url' => route('submit-form.attachments.show', [$slug, $uuid]),
         ], 201);
     }
 
@@ -70,7 +70,7 @@ class SubmitFormAttachmentsController extends Controller
             abort(404);
         }
 
-        if (!$path || !DocumentStorage::exists($path, $submitter->account_id)) {
+        if (! $path || ! DocumentStorage::exists($path, $submitter->account_id)) {
             abort(404);
         }
 
@@ -78,9 +78,9 @@ class SubmitFormAttachmentsController extends Controller
         $mimeType = DocumentStorage::mimeType($path, $submitter->account_id) ?: 'application/octet-stream';
 
         return response(DocumentStorage::get($path, $submitter->account_id), 200, [
-            'Content-Type'        => $mimeType,
+            'Content-Type' => $mimeType,
             'Content-Disposition' => 'attachment',
-            'Cache-Control'       => 'private, no-store',
+            'Cache-Control' => 'private, no-store',
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }

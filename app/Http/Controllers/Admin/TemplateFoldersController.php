@@ -15,9 +15,9 @@ class TemplateFoldersController extends Controller
         $user = $request->user();
 
         $folder = TemplateFolder::create([
-            'name'       => $request->input('name'),
+            'name' => $request->input('name'),
             'account_id' => $user->account_id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
         ]);
 
         return back()->with('success', 'Folder created.');

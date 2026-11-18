@@ -21,7 +21,7 @@ class TemplateTest extends TestCase
     #[Test]
     public function it_returns_only_non_archived_templates_with_active_scope(): void
     {
-        $active   = Template::factory()->create(['archived_at' => null]);
+        $active = Template::factory()->create(['archived_at' => null]);
         $archived = Template::factory()->create(['archived_at' => now()]);
 
         $results = Template::active()->pluck('id');
@@ -37,7 +37,7 @@ class TemplateTest extends TestCase
     #[Test]
     public function it_returns_only_archived_templates_with_archived_scope(): void
     {
-        $active   = Template::factory()->create(['archived_at' => null]);
+        $active = Template::factory()->create(['archived_at' => null]);
         $archived = Template::factory()->create(['archived_at' => now()]);
 
         $results = Template::archived()->pluck('id');
@@ -72,7 +72,7 @@ class TemplateTest extends TestCase
     #[Test]
     public function it_finds_templates_by_name_using_search_scope(): void
     {
-        $match   = Template::factory()->create(['name' => 'Invoice Template']);
+        $match = Template::factory()->create(['name' => 'Invoice Template']);
         $noMatch = Template::factory()->create(['name' => 'Contract Form']);
 
         $results = Template::search('Invoice')->pluck('id');
@@ -98,7 +98,7 @@ class TemplateTest extends TestCase
     #[Test]
     public function it_returns_the_folder_name_when_a_folder_is_assigned(): void
     {
-        $folder   = TemplateFolder::factory()->create(['name' => 'Legal Docs']);
+        $folder = TemplateFolder::factory()->create(['name' => 'Legal Docs']);
         $template = Template::factory()->create(['folder_id' => $folder->id]);
 
         $this->assertSame('Legal Docs', $template->folder_name);
@@ -130,10 +130,10 @@ class TemplateTest extends TestCase
         // The morphOne relationship stores the full class name as record_type
         SearchEntry::create([
             'record_type' => $template->getMorphClass(),
-            'record_id'   => $template->id,
-            'account_id'  => $template->account_id,
-            'tsvector'    => $template->name,
-            'ngram'       => $template->name,
+            'record_id' => $template->id,
+            'account_id' => $template->account_id,
+            'tsvector' => $template->name,
+            'ngram' => $template->name,
         ]);
 
         $entry = $template->searchEntry;

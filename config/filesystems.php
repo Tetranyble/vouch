@@ -61,7 +61,7 @@ return [
                     'private' => 0770,
                 ],
             ],
-            'url' => rtrim(env('APP_URL'), '/') . '/storage',
+            'url' => rtrim(env('APP_URL'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\DocumentStorage;
 use App\Http\Controllers\Controller;
 use App\Models\Submission;
 use App\Models\Template;
-use Illuminate\Http\Request;
-use App\Facades\DocumentStorage;
 use App\Support\TemporaryDocumentFile;
+use Illuminate\Http\Request;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 class SubmissionsPreviewController extends Controller
 {
     public function show(Request $request, int $submission)
     {
-        $user       = $request->user();
+        $user = $request->user();
         $submissionModel = Submission::with(['submitters.completedDocuments', 'template'])
             ->forAccount($user->account_id)
             ->findOrFail($submission);
@@ -45,7 +45,7 @@ class SubmissionsPreviewController extends Controller
             // edited template. Older submissions retain a compatibility fallback.
             $documents = $submissionModel->template_documents ?? $submissionModel->template?->documents ?? [];
             foreach ($documents as $doc) {
-                if (!empty($doc['storage_path']) && DocumentStorage::exists($doc['storage_path'], $user->account_id)) {
+                if (! empty($doc['storage_path']) && DocumentStorage::exists($doc['storage_path'], $user->account_id)) {
                     $storagePaths->push($doc['storage_path']);
                 }
             }
@@ -55,7 +55,7 @@ class SubmissionsPreviewController extends Controller
             abort(404, 'No documents available for preview.');
         }
 
-        $pdf = new Fpdi();
+        $pdf = new Fpdi;
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
 
@@ -68,7 +68,7 @@ class SubmissionsPreviewController extends Controller
                 $pageCount = $pdf->setSourceFile($tmpFile);
 
                 for ($i = 1; $i <= $pageCount; $i++) {
-                    $tpl  = $pdf->importPage($i);
+                    $tpl = $pdf->importPage($i);
                     $size = $pdf->getTemplateSize($tpl);
 
                     $pdf->AddPage(
@@ -84,13 +84,13 @@ class SubmissionsPreviewController extends Controller
             }
         }
 
-        $content  = $pdf->Output('', 'S');
-        $filename = 'preview-submission-' . $submissionModel->id . '.pdf';
+        $content = $pdf->Output('', 'S');
+        $filename = 'preview-submission-'.$submissionModel->id.'.pdf';
 
         return response($content, 200, [
-            'Content-Type'        => 'application/pdf',
+            'Content-Type' => 'application/pdf',
             'Content-Disposition' => "inline; filename=\"{$filename}\"",
-            'Cache-Control'       => 'no-store',
+            'Cache-Control' => 'no-store',
         ]);
     }
 

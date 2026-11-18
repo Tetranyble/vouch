@@ -18,33 +18,33 @@ class SubmitFormDeclineTest extends TestCase
 
     private function makeSubmitter(array $overrides = []): Submitter
     {
-        $account  = Account::factory()->create();
-        $author   = User::factory()->create(['account_id' => $account->id]);
-        $folder   = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
+        $account = Account::factory()->create();
+        $author = User::factory()->create(['account_id' => $account->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
         $submitterUuid = (string) \Illuminate\Support\Str::uuid();
 
         $template = Template::factory()->create([
-            'account_id'  => $account->id,
-            'author_id'   => $author->id,
-            'folder_id'   => $folder->id,
-            'submitters'  => [['name' => 'First Party', 'uuid' => $submitterUuid]],
+            'account_id' => $account->id,
+            'author_id' => $author->id,
+            'folder_id' => $folder->id,
+            'submitters' => [['name' => 'First Party', 'uuid' => $submitterUuid]],
         ]);
 
         $submission = Submission::factory()->create([
-            'template_id'         => $template->id,
-            'account_id'          => $account->id,
-            'created_by_user_id'  => $author->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
+            'created_by_user_id' => $author->id,
             'template_submitters' => $template->submitters,
         ]);
 
         return Submitter::factory()->create(array_merge([
             'submission_id' => $submission->id,
-            'account_id'    => $account->id,
-            'uuid'          => $submitterUuid,
-            'order'         => 0,
-            'completed_at'  => null,
-            'declined_at'   => null,
-            'metadata'      => [],
+            'account_id' => $account->id,
+            'uuid' => $submitterUuid,
+            'order' => 0,
+            'completed_at' => null,
+            'declined_at' => null,
+            'metadata' => [],
         ], $overrides));
     }
 
@@ -96,7 +96,7 @@ class SubmitFormDeclineTest extends TestCase
 
         $this->assertDatabaseHas('submission_events', [
             'submitter_id' => $submitter->id,
-            'event_type'   => 'form.declined',
+            'event_type' => 'form.declined',
         ]);
     }
 

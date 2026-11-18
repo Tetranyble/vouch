@@ -18,38 +18,38 @@ class SubmittersApiTest extends TestCase
 
     private function createApiToken(?Account $account = null): array
     {
-        $account  = $account ?? Account::factory()->create();
-        $user     = User::factory()->create(['account_id' => $account->id]);
-        $token    = $user->createToken('vouch-api')->plainTextToken;
+        $account = $account ?? Account::factory()->create();
+        $user = User::factory()->create(['account_id' => $account->id]);
+        $token = $user->createToken('vouch-api')->plainTextToken;
 
         return ['account' => $account, 'user' => $user, 'rawToken' => $token];
     }
 
     private function authHeaders(string $rawToken): array
     {
-        return ['Authorization' => 'Bearer ' . $rawToken];
+        return ['Authorization' => 'Bearer '.$rawToken];
     }
 
     private function makeSubmitterForAccount(Account $account, User $user, array $overrides = []): Submitter
     {
         $folder = TemplateFolder::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
+            'author_id' => $user->id,
         ]);
         $template = Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
         ]);
         $submission = Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
 
         return Submitter::factory()->create(array_merge([
             'submission_id' => $submission->id,
-            'account_id'    => $account->id,
+            'account_id' => $account->id,
         ], $overrides));
     }
 
@@ -84,18 +84,18 @@ class SubmittersApiTest extends TestCase
         $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $user->id]);
         $template = Template::factory()->create([
             'account_id' => $account->id,
-            'author_id'  => $user->id,
-            'folder_id'  => $folder->id,
+            'author_id' => $user->id,
+            'folder_id' => $folder->id,
         ]);
 
         $submissionA = Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
         $submissionB = Submission::factory()->create([
-            'template_id'        => $template->id,
-            'account_id'         => $account->id,
+            'template_id' => $template->id,
+            'account_id' => $account->id,
             'created_by_user_id' => $user->id,
         ]);
 
@@ -162,13 +162,13 @@ class SubmittersApiTest extends TestCase
         ['account' => $account, 'rawToken' => $rawToken, 'user' => $user] = $this->createApiToken();
 
         $submitter = $this->makeSubmitterForAccount($account, $user, [
-            'name'  => 'Old Name',
+            'name' => 'Old Name',
             'email' => 'old@example.com',
         ]);
 
         $response = $this->withHeaders($this->authHeaders($rawToken))
             ->putJson("/api/submitters/{$submitter->id}", [
-                'name'  => 'New Name',
+                'name' => 'New Name',
                 'email' => 'new@example.com',
             ]);
 
@@ -176,8 +176,8 @@ class SubmittersApiTest extends TestCase
             ->assertJsonFragment(['name' => 'New Name', 'email' => 'new@example.com']);
 
         $this->assertDatabaseHas('submitters', [
-            'id'    => $submitter->id,
-            'name'  => 'New Name',
+            'id' => $submitter->id,
+            'name' => 'New Name',
             'email' => 'new@example.com',
         ]);
     }
@@ -225,7 +225,7 @@ class SubmittersApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonFragment([
-                'id'    => $user->id,
+                'id' => $user->id,
                 'email' => $user->email,
             ])
             ->assertJsonStructure(['id', 'email', 'first_name', 'last_name', 'name', 'account']);
@@ -257,12 +257,13 @@ class SubmittersApiTest extends TestCase
     {
         ['user' => $user, 'rawToken' => $rawToken] = $this->createApiToken();
 
-        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $rawToken])
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$rawToken])
             ->getJson('/api/users/me');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['id' => $user->id]);
     }
+
     #[Test]
     public function completed_signer_values_are_immutable_through_the_api(): void
     {
@@ -278,5 +279,4 @@ class SubmittersApiTest extends TestCase
 
         $this->assertSame('original', $submitter->fresh()->values['signed_field']);
     }
-
 }

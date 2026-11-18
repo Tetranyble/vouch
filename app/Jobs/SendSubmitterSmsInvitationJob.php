@@ -16,6 +16,7 @@ class SendSubmitterSmsInvitationJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public array $backoff = [60, 300, 900];
 
     public function __construct(
@@ -28,12 +29,13 @@ class SendSubmitterSmsInvitationJob implements ShouldQueue
     {
         $submitter = Submitter::findOrFail($this->submitterId);
 
-        if (!$submitter->phone) {
+        if (! $submitter->phone) {
             Log::warning("Submitter {$this->submitterId} has no phone number.");
+
             return;
         }
 
-        $url  = url("/s/{$submitter->slug}");
+        $url = url("/s/{$submitter->slug}");
         $body = "{$this->senderName} has sent you a document to sign: \"{$this->templateName}\". Sign here: {$url}";
 
         $sms->send($submitter->phone, $body);

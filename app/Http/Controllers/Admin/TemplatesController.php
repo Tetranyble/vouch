@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Actions\Templates\CloneTemplateAction;
 use App\Actions\Templates\CreateTemplateAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateTemplateRequest;
@@ -173,7 +172,7 @@ class TemplatesController extends Controller
             'submitters' => $template->submitters ?? [],
             'preferences' => $template->preferences ?? [],
             'prefillable_fields' => collect($template->fields ?? [])
-                ->filter(fn ($f) => !empty($f['prefillable']))
+                ->filter(fn ($f) => ! empty($f['prefillable']))
                 ->values()
                 ->toArray(),
             'author' => [

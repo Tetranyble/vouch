@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Account;
 use App\Models\WebhookEvent;
 use App\Models\WebhookUrl;
 use Illuminate\Database\Eloquent\Factories\Factory;

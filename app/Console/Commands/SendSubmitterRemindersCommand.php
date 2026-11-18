@@ -9,7 +9,8 @@ use Illuminate\Console\Command;
 
 class SendSubmitterRemindersCommand extends Command
 {
-    protected $signature   = 'vouch:send-reminders';
+    protected $signature = 'vouch:send-reminders';
+
     protected $description = 'Send reminder emails to submitters who have not completed their form, respecting per-account notification settings';
 
     public function handle(): int
@@ -40,7 +41,7 @@ class SendSubmitterRemindersCommand extends Command
                 continue;
             }
 
-            $days   = (int) ($settings->get('reminder_after_days') ?: 3);
+            $days = (int) ($settings->get('reminder_after_days') ?: 3);
             $cutoff = now()->subDays($days);
 
             $submitters = Submitter::query()
@@ -55,9 +56,9 @@ class SendSubmitterRemindersCommand extends Command
                 ->get();
 
             foreach ($submitters as $submitter) {
-                $submission   = $submitter->submission;
+                $submission = $submitter->submission;
                 $templateName = $submission->template?->name ?? 'Document';
-                $senderName   = $submission->createdByUser?->full_name
+                $senderName = $submission->createdByUser?->full_name
                     ?: ($submission->createdByUser?->email ?? 'Vouch');
 
                 SendSubmitterInvitationJob::dispatch($submitter->id, $senderName, $templateName);

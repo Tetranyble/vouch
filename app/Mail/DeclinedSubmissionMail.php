@@ -23,7 +23,7 @@ class DeclinedSubmissionMail extends Mailable
     public function envelope(): Envelope
     {
         $submitterLabel = $this->submitter->name ?: $this->submitter->email ?: $this->submitter->phone ?? 'Submitter';
-        $shortName      = mb_strimwidth($this->documentName, 0, 20, '…');
+        $shortName = mb_strimwidth($this->documentName, 0, 20, '…');
 
         return new Envelope(
             subject: "Signature declined: {$shortName}",

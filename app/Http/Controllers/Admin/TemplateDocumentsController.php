@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Facades\DocumentStorage;
 use App\Http\Controllers\Controller;
 use App\Models\Template;
 use Illuminate\Http\Request;
-use App\Facades\DocumentStorage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 
 class TemplateDocumentsController extends Controller
 {
     private const ALLOWED_MIMES = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
     private const MAX_SIZE_MB = 20;
 
     public function store(Request $request, string $templateId)
@@ -21,7 +22,7 @@ class TemplateDocumentsController extends Controller
                 'required',
                 'file',
                 'mimetypes:application/pdf,image/jpeg,image/png,image/gif,image/webp',
-                'max:' . (self::MAX_SIZE_MB * 1024),
+                'max:'.(self::MAX_SIZE_MB * 1024),
             ],
         ]);
 
@@ -81,7 +82,7 @@ class TemplateDocumentsController extends Controller
         $template = Template::forAccount($user->account_id)->findOrFail($templateId);
 
         $doc = collect($template->documents ?? [])->firstWhere('uuid', $attachmentUuid);
-        if (!$doc || !DocumentStorage::exists($doc['storage_path'], $user->account_id)) {
+        if (! $doc || ! DocumentStorage::exists($doc['storage_path'], $user->account_id)) {
             abort(404);
         }
 
@@ -140,7 +141,7 @@ class TemplateDocumentsController extends Controller
         abort_unless($existingDocument, 404);
 
         $dataUrl = $request->input('data');
-        if (!str_starts_with($dataUrl, 'data:image/jpeg;base64,')) {
+        if (! str_starts_with($dataUrl, 'data:image/jpeg;base64,')) {
             return response()->json(['error' => 'Invalid image data'], 422);
         }
 
@@ -157,6 +158,7 @@ class TemplateDocumentsController extends Controller
             if ($doc['uuid'] === $attachmentUuid) {
                 $doc['preview_path'] = $thumbPath;
             }
+
             return $doc;
         })->toArray();
 
@@ -181,7 +183,7 @@ class TemplateDocumentsController extends Controller
         $doc = collect($template->documents ?? [])->firstWhere('uuid', $attachmentUuid);
         $thumbPath = $doc['preview_path'] ?? null;
 
-        if (!$thumbPath || !DocumentStorage::exists($thumbPath, $user->account_id)) {
+        if (! $thumbPath || ! DocumentStorage::exists($thumbPath, $user->account_id)) {
             abort(404);
         }
 
@@ -197,6 +199,7 @@ class TemplateDocumentsController extends Controller
         try {
             $content = DocumentStorage::get($storagePath, $accountId);
             $count = preg_match_all('/\/Type[\s]*\/Page[^s]/', $content, $matches);
+
             return max(1, $count ?: 1);
         } catch (\Throwable) {
             return 1;

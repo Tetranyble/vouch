@@ -9,7 +9,8 @@ use Illuminate\Console\Command;
 
 class ExpireSubmissionsCommand extends Command
 {
-    protected $signature   = 'vouch:expire-submissions';
+    protected $signature = 'vouch:expire-submissions';
+
     protected $description = 'Mark submissions past their expire_at date as expired';
 
     public function handle(): int
@@ -32,11 +33,11 @@ class ExpireSubmissionsCommand extends Command
                 $submitter->update(['declined_at' => now()]);
 
                 SubmissionEvent::create([
-                    'submission_id'   => $submission->id,
-                    'submitter_id'    => $submitter->id,
-                    'event_type'      => 'submission.expired',
+                    'submission_id' => $submission->id,
+                    'submitter_id' => $submitter->id,
+                    'event_type' => 'submission.expired',
                     'event_timestamp' => now(),
-                    'data'            => ['reason' => 'expire_at exceeded'],
+                    'data' => ['reason' => 'expire_at exceeded'],
                 ]);
 
                 DispatchWebhookEventJob::dispatch(

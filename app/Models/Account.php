@@ -10,8 +10,8 @@ class Account extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'locale', 'timezone', 'archived_at', 'uuid'];
-    protected $casts = ['archived_at' => 'datetime'];
 
+    protected $casts = ['archived_at' => 'datetime'];
 
     protected static function boot(): void
     {
@@ -22,12 +22,36 @@ class Account extends Model
             }
         });
     }
-    public function users() { return $this->hasMany(User::class); }
-    public function templates() { return $this->hasMany(Template::class); }
-    public function submissions() { return $this->hasMany(Submission::class); }
-    public function templateFolders() { return $this->hasMany(TemplateFolder::class); }
-    public function configs() { return $this->hasMany(AccountConfig::class); }
-    public function webhookUrls() { return $this->hasMany(WebhookUrl::class); }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function templates()
+    {
+        return $this->hasMany(Template::class);
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
+
+    public function templateFolders()
+    {
+        return $this->hasMany(TemplateFolder::class);
+    }
+
+    public function configs()
+    {
+        return $this->hasMany(AccountConfig::class);
+    }
+
+    public function webhookUrls()
+    {
+        return $this->hasMany(WebhookUrl::class);
+    }
 
     public function getDefaultTemplateFolderAttribute(): TemplateFolder
     {

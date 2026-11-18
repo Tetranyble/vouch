@@ -25,8 +25,8 @@ class ProfileTest extends TestCase
 
         $response = $this->actingAs($user)->patch('/profile', [
             'first_name' => 'Jane',
-            'last_name'  => 'Doe',
-            'email'      => 'jane@example.com',
+            'last_name' => 'Doe',
+            'email' => 'jane@example.com',
         ]);
 
         $response->assertSessionHasNoErrors()->assertRedirect('/profile');
@@ -45,8 +45,8 @@ class ProfileTest extends TestCase
 
         $response = $this->actingAs($user)->patch('/profile', [
             'first_name' => $user->first_name,
-            'last_name'  => $user->last_name,
-            'email'      => $user->email,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
         ]);
 
         $response->assertSessionHasNoErrors()->assertRedirect('/profile');

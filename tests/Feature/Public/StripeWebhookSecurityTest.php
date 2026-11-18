@@ -31,6 +31,7 @@ class StripeWebhookSecurityTest extends TestCase
             'name' => 'Document fee',
             'preferences' => ['price' => 12.50, 'currency' => 'USD'],
         ]]]);
+
         return $submitter;
     }
 
@@ -52,6 +53,7 @@ class StripeWebhookSecurityTest extends TestCase
             ]],
         ], JSON_THROW_ON_ERROR);
         $signature = hash_hmac('sha256', $timestamp.'.'.$body, 'whsec_test');
+
         return [$body, "t={$timestamp},v1={$signature}"];
     }
 

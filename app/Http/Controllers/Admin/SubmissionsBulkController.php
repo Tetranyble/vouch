@@ -11,16 +11,16 @@ class SubmissionsBulkController extends Controller
 {
     public function store(BulkSubmissionRequest $request, string $templateId, CreateSubmissionAction $action)
     {
-        $template    = Template::forAccount($request->user()->account_id)->findOrFail($templateId);
-        $recipients  = $request->validRecipients();
-        $created     = 0;
+        $template = Template::forAccount($request->user()->account_id)->findOrFail($templateId);
+        $recipients = $request->validRecipients();
+        $created = 0;
 
         foreach ($recipients as $recipientData) {
             $action->execute(
-                template:        $template,
-                creator:         $request->user(),
+                template: $template,
+                creator: $request->user(),
                 submitterInputs: [$recipientData],
-                source:          'bulk_invite',
+                source: 'bulk_invite',
             );
             $created++;
         }

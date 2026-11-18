@@ -2,9 +2,7 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Account;
 use App\Models\SearchEntry;
-use App\Models\Submission;
 use App\Models\Submitter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -22,10 +20,10 @@ class SubmitterTest extends TestCase
     public function it_returns_declined_status_when_declined_at_is_set(): void
     {
         $submitter = Submitter::factory()->create([
-            'declined_at'  => now(),
+            'declined_at' => now(),
             'completed_at' => null,
-            'opened_at'    => null,
-            'sent_at'      => null,
+            'opened_at' => null,
+            'sent_at' => null,
         ]);
 
         $this->assertSame('declined', $submitter->status);
@@ -35,10 +33,10 @@ class SubmitterTest extends TestCase
     public function it_returns_completed_status_when_completed_at_is_set(): void
     {
         $submitter = Submitter::factory()->create([
-            'declined_at'  => null,
+            'declined_at' => null,
             'completed_at' => now(),
-            'opened_at'    => null,
-            'sent_at'      => null,
+            'opened_at' => null,
+            'sent_at' => null,
         ]);
 
         $this->assertSame('completed', $submitter->status);
@@ -48,10 +46,10 @@ class SubmitterTest extends TestCase
     public function it_returns_opened_status_when_opened_at_is_set(): void
     {
         $submitter = Submitter::factory()->create([
-            'declined_at'  => null,
+            'declined_at' => null,
             'completed_at' => null,
-            'opened_at'    => now(),
-            'sent_at'      => null,
+            'opened_at' => now(),
+            'sent_at' => null,
         ]);
 
         $this->assertSame('opened', $submitter->status);
@@ -61,10 +59,10 @@ class SubmitterTest extends TestCase
     public function it_returns_sent_status_when_only_sent_at_is_set(): void
     {
         $submitter = Submitter::factory()->create([
-            'declined_at'  => null,
+            'declined_at' => null,
             'completed_at' => null,
-            'opened_at'    => null,
-            'sent_at'      => now(),
+            'opened_at' => null,
+            'sent_at' => now(),
         ]);
 
         $this->assertSame('sent', $submitter->status);
@@ -74,10 +72,10 @@ class SubmitterTest extends TestCase
     public function it_returns_awaiting_status_when_no_timestamps_are_set(): void
     {
         $submitter = Submitter::factory()->create([
-            'declined_at'  => null,
+            'declined_at' => null,
             'completed_at' => null,
-            'opened_at'    => null,
-            'sent_at'      => null,
+            'opened_at' => null,
+            'sent_at' => null,
         ]);
 
         $this->assertSame('awaiting', $submitter->status);
@@ -87,7 +85,7 @@ class SubmitterTest extends TestCase
     public function it_prioritises_declined_over_completed_when_both_are_set(): void
     {
         $submitter = Submitter::factory()->create([
-            'declined_at'  => now(),
+            'declined_at' => now(),
             'completed_at' => now(),
         ]);
 
@@ -102,7 +100,7 @@ class SubmitterTest extends TestCase
     public function it_returns_name_as_display_name_when_name_is_present(): void
     {
         $submitter = Submitter::factory()->make([
-            'name'  => 'Alice Smith',
+            'name' => 'Alice Smith',
             'email' => 'alice@example.com',
             'phone' => '+15551234567',
         ]);
@@ -114,7 +112,7 @@ class SubmitterTest extends TestCase
     public function it_falls_back_to_email_when_name_is_absent(): void
     {
         $submitter = Submitter::factory()->make([
-            'name'  => null,
+            'name' => null,
             'email' => 'bob@example.com',
             'phone' => '+15557654321',
         ]);
@@ -126,7 +124,7 @@ class SubmitterTest extends TestCase
     public function it_falls_back_to_phone_when_name_and_email_are_absent(): void
     {
         $submitter = Submitter::factory()->make([
-            'name'  => null,
+            'name' => null,
             'email' => null,
             'phone' => '+15551112222',
         ]);
@@ -138,7 +136,7 @@ class SubmitterTest extends TestCase
     public function it_returns_unknown_when_name_email_and_phone_are_all_absent(): void
     {
         $submitter = Submitter::factory()->make([
-            'name'  => null,
+            'name' => null,
             'email' => null,
             'phone' => null,
         ]);
@@ -158,10 +156,10 @@ class SubmitterTest extends TestCase
         // The morphOne relationship stores the full class name as record_type
         SearchEntry::create([
             'record_type' => $submitter->getMorphClass(),
-            'record_id'   => $submitter->id,
-            'account_id'  => $submitter->account_id,
-            'tsvector'    => $submitter->name . ' ' . $submitter->email,
-            'ngram'       => $submitter->name . ' ' . $submitter->email,
+            'record_id' => $submitter->id,
+            'account_id' => $submitter->account_id,
+            'tsvector' => $submitter->name.' '.$submitter->email,
+            'ngram' => $submitter->name.' '.$submitter->email,
         ]);
 
         $entry = $submitter->searchEntry;

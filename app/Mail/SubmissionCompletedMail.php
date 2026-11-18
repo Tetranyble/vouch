@@ -23,7 +23,7 @@ class SubmissionCompletedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "All parties signed: " . ($this->submission->name ?? $this->submission->template?->name ?? 'Document'),
+            subject: 'All parties signed: '.($this->submission->name ?? $this->submission->template?->name ?? 'Document'),
         );
     }
 

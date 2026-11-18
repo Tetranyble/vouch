@@ -12,20 +12,20 @@ class MfaController extends Controller
 {
     public function show(Request $request)
     {
-        $user    = $request->user();
+        $user = $request->user();
         $enabled = (bool) UserConfig::where('user_id', $user->id)
             ->where('key', 'totp_secret')
             ->value('value');
 
         $qrCodeUrl = null;
-        $secret    = null;
+        $secret = null;
 
-        if (!$enabled) {
+        if (! $enabled) {
             $pending = UserConfig::where('user_id', $user->id)
                 ->where('key', 'totp_secret_pending')
                 ->value('value');
 
-            if (!$pending) {
+            if (! $pending) {
                 $totp = TOTP::generate();
                 $totp->setLabel($user->email);
                 $totp->setIssuer(config('app.name', 'Vouch'));
@@ -42,14 +42,14 @@ class MfaController extends Controller
                 $totp->setIssuer(config('app.name', 'Vouch'));
             }
 
-            $secret    = $pending;
-            $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($totp->getProvisioningUri());
+            $secret = $pending;
+            $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='.urlencode($totp->getProvisioningUri());
         }
 
         return Inertia::render('Admin/Settings/Mfa', [
-            'mfa'       => ['enabled' => $enabled],
+            'mfa' => ['enabled' => $enabled],
             'qrCodeUrl' => $qrCodeUrl,
-            'secret'    => $secret,
+            'secret' => $secret,
         ]);
     }
 
@@ -57,18 +57,18 @@ class MfaController extends Controller
     {
         $request->validate(['code' => 'required|string|size:6']);
 
-        $user    = $request->user();
+        $user = $request->user();
         $pending = UserConfig::where('user_id', $user->id)
             ->where('key', 'totp_secret_pending')
             ->first();
 
-        if (!$pending) {
+        if (! $pending) {
             return back()->withErrors(['code' => 'No pending MFA setup found. Please reload the page.']);
         }
 
         $totp = TOTP::createFromSecret($pending->value);
 
-        if (!$totp->verify($request->input('code'), null, 1)) {
+        if (! $totp->verify($request->input('code'), null, 1)) {
             return back()->withErrors(['code' => 'Invalid code. Check your authenticator app and try again.']);
         }
 

@@ -18,12 +18,12 @@ class SubmittersResubmitController extends Controller
 
         // Reset the submitter so they can fill in the form again
         $submitter->update([
-            'slug'         => Str::random(14),
+            'slug' => Str::random(14),
             'completed_at' => null,
-            'declined_at'  => null,
-            'values'       => null,
-            'opened_at'    => null,
-            'sent_at'      => now(),
+            'declined_at' => null,
+            'values' => null,
+            'opened_at' => null,
+            'sent_at' => now(),
         ]);
 
         $submission = $submitter->submission()->with('template', 'createdByUser')->first();

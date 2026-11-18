@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Policies;
 
-use App\Models\Account;
 use App\Models\Template;
 use App\Models\TemplateSharing;
 use App\Models\User;

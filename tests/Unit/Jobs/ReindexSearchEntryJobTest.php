@@ -44,10 +44,10 @@ class ReindexSearchEntryJobTest extends TestCase
         $submission = Submission::factory()->create(['name' => 'Q4 Agreement']);
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'email'         => 'vendor@acme.com',
-            'name'          => null,
-            'phone'         => null,
+            'account_id' => $submission->account_id,
+            'email' => 'vendor@acme.com',
+            'name' => null,
+            'phone' => null,
         ]);
 
         (new ReindexSearchEntryJob('Submission', $submission->id))->handle();
@@ -66,8 +66,8 @@ class ReindexSearchEntryJobTest extends TestCase
         $submission = Submission::factory()->create(['name' => 'Master Services Agreement']);
         Submitter::factory()->create([
             'submission_id' => $submission->id,
-            'account_id'    => $submission->account_id,
-            'email'         => 'client@example.com',
+            'account_id' => $submission->account_id,
+            'email' => 'client@example.com',
         ]);
 
         (new ReindexSearchEntryJob('Submission', $submission->id))->handle();
@@ -87,7 +87,7 @@ class ReindexSearchEntryJobTest extends TestCase
     public function it_creates_a_search_entry_for_a_submitter_with_name_and_email(): void
     {
         $submitter = Submitter::factory()->create([
-            'name'  => 'Jane Doe',
+            'name' => 'Jane Doe',
             'email' => 'jane@example.com',
             'phone' => null,
         ]);
@@ -107,7 +107,7 @@ class ReindexSearchEntryJobTest extends TestCase
     public function it_includes_phone_in_the_submitter_search_entry_when_present(): void
     {
         $submitter = Submitter::factory()->create([
-            'name'  => null,
+            'name' => null,
             'email' => null,
             'phone' => '+15550001234',
         ]);

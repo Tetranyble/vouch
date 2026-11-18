@@ -135,5 +135,4 @@ class DocumentStorageIntegrationTest extends TestCase
             'media.signed-download', now()->subMinute(), ['media' => $media->id, 'account' => $account->id]
         ))->assertForbidden();
     }
-
 }

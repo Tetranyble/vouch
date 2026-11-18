@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Facades\DocumentStorage;
 use App\Models\Submission;
 use App\Models\Submitter;
 use App\Models\WebhookEvent;
@@ -13,13 +14,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Facades\DocumentStorage;
 
 class DispatchWebhookEventJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 5;
+
     public array $backoff = [60, 300, 900, 3600, 7200];
 
     public function __construct(
@@ -50,7 +51,7 @@ class DispatchWebhookEventJob implements ShouldQueue
     {
         $payload = [
             'event_type' => $this->eventType,
-            'timestamp'  => now()->toIso8601String(),
+            'timestamp' => now()->toIso8601String(),
         ];
 
         if ($this->submitterId) {
@@ -71,48 +72,48 @@ class DispatchWebhookEventJob implements ShouldQueue
     private function submitterData(Submitter $submitter): array
     {
         $submission = $submitter->submission;
-        $template   = $submission?->template;
+        $template = $submission?->template;
 
         return [
-            'id'              => $submitter->id,
-            'email'           => $submitter->email,
-            'phone'           => $submitter->phone,
-            'name'            => $submitter->name,
-            'ua'              => $submitter->ua,
-            'ip'              => $submitter->ip,
-            'sent_at'         => $submitter->sent_at?->toIso8601String(),
-            'opened_at'       => $submitter->opened_at?->toIso8601String(),
-            'declined_at'     => $submitter->declined_at?->toIso8601String(),
-            'completed_at'    => $submitter->completed_at?->toIso8601String(),
-            'created_at'      => $submitter->created_at?->toIso8601String(),
-            'updated_at'      => $submitter->updated_at?->toIso8601String(),
-            'external_id'     => $submitter->external_id,
-            'metadata'        => $submitter->metadata ?? (object)[],
-            'status'          => $submitter->status,
+            'id' => $submitter->id,
+            'email' => $submitter->email,
+            'phone' => $submitter->phone,
+            'name' => $submitter->name,
+            'ua' => $submitter->ua,
+            'ip' => $submitter->ip,
+            'sent_at' => $submitter->sent_at?->toIso8601String(),
+            'opened_at' => $submitter->opened_at?->toIso8601String(),
+            'declined_at' => $submitter->declined_at?->toIso8601String(),
+            'completed_at' => $submitter->completed_at?->toIso8601String(),
+            'created_at' => $submitter->created_at?->toIso8601String(),
+            'updated_at' => $submitter->updated_at?->toIso8601String(),
+            'external_id' => $submitter->external_id,
+            'metadata' => $submitter->metadata ?? (object) [],
+            'status' => $submitter->status,
             'application_key' => null,
-            'decline_reason'  => null,
-            'preferences'     => $submitter->preferences ?? (object)[],
-            'values'          => $this->formatValues($submitter),
-            'role'            => $this->resolveRole($submitter, $template),
-            'documents'       => $this->formatDocuments($submitter),
-            'template'        => $template ? [
-                'id'          => $template->id,
-                'name'        => $template->name,
+            'decline_reason' => null,
+            'preferences' => $submitter->preferences ?? (object) [],
+            'values' => $this->formatValues($submitter),
+            'role' => $this->resolveRole($submitter, $template),
+            'documents' => $this->formatDocuments($submitter),
+            'template' => $template ? [
+                'id' => $template->id,
+                'name' => $template->name,
                 'external_id' => $template->external_id,
-                'created_at'  => $template->created_at?->toIso8601String(),
-                'updated_at'  => $template->updated_at?->toIso8601String(),
+                'created_at' => $template->created_at?->toIso8601String(),
+                'updated_at' => $template->updated_at?->toIso8601String(),
                 'folder_name' => $template->folder_name,
             ] : null,
-            'audit_log_url'   => $this->auditLogUrl($submitter),
-            'submission_url'  => url('/s/' . $submitter->slug),
-            'submission'      => $submission ? [
-                'id'                   => $submission->id,
-                'audit_log_url'        => $this->submissionAuditLogUrl($submission),
-                'combined_document_url'=> null,
-                'status'               => $submission->status,
-                'url'                  => url('/s/' . $submitter->slug),
-                'variables'            => $submission->variables ?? (object)[],
-                'created_at'           => $submission->created_at?->toIso8601String(),
+            'audit_log_url' => $this->auditLogUrl($submitter),
+            'submission_url' => url('/s/'.$submitter->slug),
+            'submission' => $submission ? [
+                'id' => $submission->id,
+                'audit_log_url' => $this->submissionAuditLogUrl($submission),
+                'combined_document_url' => null,
+                'status' => $submission->status,
+                'url' => url('/s/'.$submitter->slug),
+                'variables' => $submission->variables ?? (object) [],
+                'created_at' => $submission->created_at?->toIso8601String(),
             ] : null,
         ];
     }
@@ -122,38 +123,38 @@ class DispatchWebhookEventJob implements ShouldQueue
         $template = $submission->template;
 
         return [
-            'id'          => $submission->id,
-            'status'      => $submission->status,
-            'created_at'  => $submission->created_at?->toIso8601String(),
-            'updated_at'  => $submission->updated_at?->toIso8601String(),
+            'id' => $submission->id,
+            'status' => $submission->status,
+            'created_at' => $submission->created_at?->toIso8601String(),
+            'updated_at' => $submission->updated_at?->toIso8601String(),
             'external_id' => $template?->external_id,
-            'variables'   => $submission->variables ?? (object)[],
-            'template'    => $template ? [
-                'id'          => $template->id,
-                'name'        => $template->name,
+            'variables' => $submission->variables ?? (object) [],
+            'template' => $template ? [
+                'id' => $template->id,
+                'name' => $template->name,
                 'external_id' => $template->external_id,
-                'created_at'  => $template->created_at?->toIso8601String(),
-                'updated_at'  => $template->updated_at?->toIso8601String(),
+                'created_at' => $template->created_at?->toIso8601String(),
+                'updated_at' => $template->updated_at?->toIso8601String(),
                 'folder_name' => $template->folder_name,
             ] : null,
-            'submitters'  => $submission->submitters->map(fn ($s) => [
-                'id'           => $s->id,
-                'email'        => $s->email,
-                'phone'        => $s->phone,
-                'name'         => $s->name,
-                'status'       => $s->status,
-                'sent_at'      => $s->sent_at?->toIso8601String(),
+            'submitters' => $submission->submitters->map(fn ($s) => [
+                'id' => $s->id,
+                'email' => $s->email,
+                'phone' => $s->phone,
+                'name' => $s->name,
+                'status' => $s->status,
+                'sent_at' => $s->sent_at?->toIso8601String(),
                 'completed_at' => $s->completed_at?->toIso8601String(),
-                'declined_at'  => $s->declined_at?->toIso8601String(),
-                'role'         => $this->resolveRole($s, $template),
+                'declined_at' => $s->declined_at?->toIso8601String(),
+                'role' => $this->resolveRole($s, $template),
             ])->toArray(),
         ];
     }
 
     private function formatValues(Submitter $submitter): array
     {
-        $values   = $submitter->values ?? [];
-        $fields   = $submitter->submission?->template?->fields ?? [];
+        $values = $submitter->values ?? [];
+        $fields = $submitter->submission?->template?->fields ?? [];
         $fieldMap = [];
 
         foreach ($fields as $field) {
@@ -176,7 +177,7 @@ class DispatchWebhookEventJob implements ShouldQueue
     private function resolveRole(Submitter $submitter, $template): string
     {
         $submitters = $template?->submitters ?? [];
-        $order      = (int) ($submitter->order ?? 0);
+        $order = (int) ($submitter->order ?? 0);
 
         return $submitters[$order]['name'] ?? 'Signer';
     }
@@ -184,10 +185,10 @@ class DispatchWebhookEventJob implements ShouldQueue
     private function formatDocuments(Submitter $submitter): array
     {
         return $submitter->completedDocuments
-            ->filter(fn ($d) => $d->filename && !str_contains(strtolower($d->filename), 'audit'))
+            ->filter(fn ($d) => $d->filename && ! str_contains(strtolower($d->filename), 'audit'))
             ->map(fn ($d) => [
                 'name' => pathinfo($d->filename, PATHINFO_FILENAME),
-                'url'  => DocumentStorage::url($d->storage_path, $this->accountId),
+                'url' => DocumentStorage::url($d->storage_path, $this->accountId),
             ])
             ->values()
             ->toArray();
@@ -218,26 +219,26 @@ class DispatchWebhookEventJob implements ShouldQueue
 
     private function deliverToWebhook(WebhookUrl $webhook, array $payload): void
     {
-        $body      = json_encode($payload);
+        $body = json_encode($payload);
         $signature = hash_hmac('sha256', $body, $webhook->secret ?? '');
 
         $event = WebhookEvent::create([
             'webhook_url_id' => $webhook->id,
-            'event_type'     => $this->eventType,
-            'status'         => 'pending',
+            'event_type' => $this->eventType,
+            'status' => 'pending',
         ]);
 
         try {
             $response = Http::withHeaders([
-                'Content-Type'          => 'application/json',
-                'X-Vouch-Signature'     => $signature,
-                'User-Agent'            => 'Vouch-Webhook/1.0',
+                'Content-Type' => 'application/json',
+                'X-Vouch-Signature' => $signature,
+                'User-Agent' => 'Vouch-Webhook/1.0',
             ])
                 ->timeout(10)
                 ->post($webhook->url, $payload);
 
             $event->update([
-                'status'        => $response->successful() ? 'success' : 'error',
+                'status' => $response->successful() ? 'success' : 'error',
                 'response_code' => $response->status(),
             ]);
         } catch (\Throwable $e) {

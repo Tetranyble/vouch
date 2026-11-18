@@ -66,6 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $first = $this->first_name ? $this->first_name[0] : '';
         $last = $this->last_name ? $this->last_name[0] : '';
+
         return strtoupper($first.$last) ?: strtoupper($this->email[0] ?? 'U');
     }
 

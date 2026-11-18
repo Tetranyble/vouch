@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Facades\DocumentStorage;
 use App\Http\Controllers\Controller;
 use App\Models\Submitter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Facades\DocumentStorage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AttachmentsController extends Controller
 {
@@ -19,15 +19,16 @@ class AttachmentsController extends Controller
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'text/plain',
     ];
+
     private const MAX_MB = 20;
 
     public function store(Request $request): JsonResponse
     {
         $request->validate([
             'submitter_slug' => 'required|string',
-            'file'           => ['required', 'file', 'mimetypes:'.implode(',', self::ALLOWED_MIMES), 'max:'.(self::MAX_MB * 1024)],
-            'type'           => 'sometimes|string|max:255',
-            'field_uuid'     => 'sometimes|uuid',
+            'file' => ['required', 'file', 'mimetypes:'.implode(',', self::ALLOWED_MIMES), 'max:'.(self::MAX_MB * 1024)],
+            'type' => 'sometimes|string|max:255',
+            'field_uuid' => 'sometimes|uuid',
         ]);
 
         $submitter = Submitter::where('slug', $request->input('submitter_slug'))->firstOrFail();
@@ -40,8 +41,8 @@ class AttachmentsController extends Controller
 
         abort_if($submitter->completed_at || $submitter->declined_at, 422, 'Form is already closed.');
 
-        $file    = $request->file('file');
-        $uuid    = (string) Str::uuid();
+        $file = $request->file('file');
+        $uuid = (string) Str::uuid();
         $path = DocumentStorage::upload($file, $submitter->account_id, 'signer-attachment', $request->user()->id, [
             'submitter_id' => $submitter->id, 'attachment_uuid' => $uuid,
         ]);
@@ -67,10 +68,10 @@ class AttachmentsController extends Controller
         }
 
         return response()->json([
-            'uuid'         => $uuid,
-            'filename'     => $file->getClientOriginalName(),
+            'uuid' => $uuid,
+            'filename' => $file->getClientOriginalName(),
             'content_type' => $file->getMimeType(),
-            'url'          => DocumentStorage::url($path, $accountId),
+            'url' => DocumentStorage::url($path, $accountId),
         ], 201);
     }
 }

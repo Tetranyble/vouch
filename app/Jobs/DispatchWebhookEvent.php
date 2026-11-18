@@ -16,8 +16,7 @@ class DispatchWebhookEvent implements ShouldQueue
     public function __construct(
         private readonly string $event,
         private readonly array $payload
-    ) {
-    }
+    ) {}
 
     public function handle(WebhookDeliveryService $webhookDeliveryService): void
     {

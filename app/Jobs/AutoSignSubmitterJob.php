@@ -19,18 +19,28 @@ class AutoSignSubmitterJob implements ShouldQueue
 
     public function handle(): void
     {
-        $submitter  = Submitter::with('submission')->find($this->submitterId);
+        $submitter = Submitter::with('submission')->find($this->submitterId);
 
-        if (!$submitter) return;
-        if ($submitter->completed_at || $submitter->declined_at) return;
-        if (!($submitter->metadata['auto_sign'] ?? false)) return;
-        if (!$submitter->email) return;
+        if (! $submitter) {
+            return;
+        }
+        if ($submitter->completed_at || $submitter->declined_at) {
+            return;
+        }
+        if (! ($submitter->metadata['auto_sign'] ?? false)) {
+            return;
+        }
+        if (! $submitter->email) {
+            return;
+        }
 
         $user = User::where('email', $submitter->email)
             ->where('account_id', $submitter->account_id)
             ->first();
 
-        if (!$user) return;
+        if (! $user) {
+            return;
+        }
 
         // Respect the user's prefill_signature preference (default: on)
         $configs = UserConfig::where('user_id', $user->id)
@@ -41,21 +51,23 @@ class AutoSignSubmitterJob implements ShouldQueue
             ? (bool) $configs->get('prefill_signature')
             : true;
 
-        if (!$prefillEnabled) return;
+        if (! $prefillEnabled) {
+            return;
+        }
 
         $savedSignature = $configs->get('signature');
-        $savedInitials  = $configs->get('initials');
+        $savedInitials = $configs->get('initials');
 
         // Resolve which fields belong to this submitter
         $submission = $submitter->submission;
-        $allFields  = $submission->template_fields ?? [];
+        $allFields = $submission->template_fields ?? [];
 
         $myFields = collect($allFields)
             ->filter(fn ($f) => ($f['submitter_uuid'] ?? null) === $submitter->uuid)
             ->values();
 
         $required = $myFields->filter(
-            fn ($f) => ($f['required'] ?? false) && !in_array($f['type'], ['heading', 'formula'])
+            fn ($f) => ($f['required'] ?? false) && ! in_array($f['type'], ['heading', 'formula'])
         );
 
         // Build values — abort if any required field cannot be auto-filled
@@ -63,10 +75,14 @@ class AutoSignSubmitterJob implements ShouldQueue
         foreach ($required as $field) {
             $type = $field['type'];
             if ($type === 'signature') {
-                if (!$savedSignature) return;
+                if (! $savedSignature) {
+                    return;
+                }
                 $values[$field['uuid']] = $savedSignature;
             } elseif ($type === 'initials') {
-                if (!$savedInitials) return;
+                if (! $savedInitials) {
+                    return;
+                }
                 $values[$field['uuid']] = $savedInitials;
             } elseif ($type === 'date') {
                 $values[$field['uuid']] = now()->format('Y-m-d');
@@ -77,7 +93,7 @@ class AutoSignSubmitterJob implements ShouldQueue
         }
 
         $submitter->update([
-            'values'       => array_merge($submitter->values ?? [], $values),
+            'values' => array_merge($submitter->values ?? [], $values),
             'completed_at' => now(),
         ]);
 
@@ -97,25 +113,29 @@ class AutoSignSubmitterJob implements ShouldQueue
 
     private function inviteNextGroup(Submitter $justCompleted): void
     {
-        $submission      = $justCompleted->submission;
+        $submission = $justCompleted->submission;
         $freshSubmitters = Submitter::where('submission_id', $submission->id)->get();
 
         $currentGroupDone = $freshSubmitters
             ->where('order', $justCompleted->order)
             ->every(fn ($s) => $s->completed_at || $s->declined_at);
 
-        if (!$currentGroupDone) return;
+        if (! $currentGroupDone) {
+            return;
+        }
 
         $nextOrder = $freshSubmitters
             ->where('order', '>', $justCompleted->order)
             ->whereNull('sent_at')
             ->min('order');
 
-        if ($nextOrder === null) return;
+        if ($nextOrder === null) {
+            return;
+        }
 
-        $creator      = $submission->createdByUser;
+        $creator = $submission->createdByUser;
         $templateName = $submission->template?->name ?? 'Document';
-        $senderName   = $creator?->full_name ?? 'Vouch';
+        $senderName = $creator?->full_name ?? 'Vouch';
 
         $nextGroup = $freshSubmitters->where('order', $nextOrder)->whereNull('sent_at');
 

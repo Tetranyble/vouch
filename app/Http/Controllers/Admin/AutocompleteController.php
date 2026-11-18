@@ -11,8 +11,8 @@ class AutocompleteController extends Controller
 {
     public function submitters(Request $request)
     {
-        $user  = $request->user();
-        $q     = $request->query('q', '');
+        $user = $request->user();
+        $q = $request->query('q', '');
         $limit = min((int) $request->query('limit', 10), 50);
 
         $results = Submitter::where('account_id', $user->account_id)
@@ -27,8 +27,8 @@ class AutocompleteController extends Controller
             ->limit($limit)
             ->get()
             ->map(fn ($s) => [
-                'id'    => $s->id,
-                'name'  => $s->name,
+                'id' => $s->id,
+                'name' => $s->name,
                 'email' => $s->email,
             ]);
 
@@ -37,8 +37,8 @@ class AutocompleteController extends Controller
 
     public function folders(Request $request)
     {
-        $user  = $request->user();
-        $q     = $request->query('q', '');
+        $user = $request->user();
+        $q = $request->query('q', '');
         $limit = min((int) $request->query('limit', 20), 50);
 
         $results = TemplateFolder::where('account_id', $user->account_id)

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Public;
 
-use App\Models\Submission;
+use App\Facades\DocumentStorage;
+use App\Http\Controllers\Controller;
 use App\Models\CompletedDocument;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
-use App\Facades\DocumentStorage;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Http\Controllers\Controller;
 
 class SubmissionPreviewController extends Controller
 {
@@ -31,31 +31,31 @@ class SubmissionPreviewController extends Controller
         // Access rules:
         // Account owners may view. External recipients need a valid signed link
         // issued after completion and within the short preview window.
-        if ($submission->account?->archived_at || !$this->canView($request, $submission, $allCompleted)) {
+        if ($submission->account?->archived_at || ! $this->canView($request, $submission, $allCompleted)) {
             abort(404);
         }
 
         $submitters = $submission->submitters->map(fn ($s) => [
-            'id'           => $s->id,
-            'name'         => $s->name,
-            'email'        => $s->email,
+            'id' => $s->id,
+            'name' => $s->name,
+            'email' => $s->email,
             'completed_at' => $s->completed_at,
-            'declined_at'  => $s->declined_at,
-            'status'       => $s->status,
+            'declined_at' => $s->declined_at,
+            'status' => $s->status,
         ])->values()->all();
 
         $documents = $this->buildDocumentList($submission);
 
         return Inertia::render('Public/SubmissionPreview', [
             'submission' => [
-                'id'           => $submission->id,
-                'slug'         => $submission->slug,
-                'name'         => $submission->name ?? $submission->template?->name,
-                'status'       => $submission->status,
-                'created_at'   => $submission->created_at,
+                'id' => $submission->id,
+                'slug' => $submission->slug,
+                'name' => $submission->name ?? $submission->template?->name,
+                'status' => $submission->status,
+                'created_at' => $submission->created_at,
             ],
             'submitters' => $submitters,
-            'documents'  => $documents,
+            'documents' => $documents,
         ]);
     }
 
@@ -93,8 +93,8 @@ class SubmissionPreviewController extends Controller
                     continue;
                 }
                 $docs[] = [
-                    'id'           => $doc->id,
-                    'filename'     => $doc->filename,
+                    'id' => $doc->id,
+                    'filename' => $doc->filename,
                     'download_url' => URL::temporarySignedRoute(
                         'submission-preview.download',
                         now()->addMinutes(self::PUBLIC_TTL_MINUTES),
@@ -126,7 +126,7 @@ class SubmissionPreviewController extends Controller
             $submission->submitters->pluck('id')
         )->findOrFail($docId);
 
-        if (!$doc->storage_path || !DocumentStorage::exists($doc->storage_path, $submission->account_id)) {
+        if (! $doc->storage_path || ! DocumentStorage::exists($doc->storage_path, $submission->account_id)) {
             abort(404);
         }
 

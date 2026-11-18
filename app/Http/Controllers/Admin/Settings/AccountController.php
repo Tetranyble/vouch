@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Models\UserConfig;
 use App\Models\User;
+use App\Models\UserConfig;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,17 +17,17 @@ class AccountController extends Controller
 {
     public function profile(Request $request)
     {
-        $user    = $request->user();
+        $user = $request->user();
         $configs = UserConfig::where('user_id', $user->id)
             ->whereIn('key', ['signature', 'initials', 'totp_secret'])
             ->pluck('value', 'key');
 
         return Inertia::render('Admin/Settings/Profile', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
-            'status'          => session('status'),
-            'userSignature'   => $configs->get('signature'),
-            'userInitials'    => $configs->get('initials'),
-            'mfaEnabled'      => (bool) $configs->get('totp_secret'),
+            'status' => session('status'),
+            'userSignature' => $configs->get('signature'),
+            'userInitials' => $configs->get('initials'),
+            'mfaEnabled' => (bool) $configs->get('totp_secret'),
         ]);
     }
 
@@ -52,12 +52,12 @@ class AccountController extends Controller
                 'locale' => $account->locale,
                 'timezone' => $account->timezone,
             ],
-            'timezones'        => \DateTimeZone::listIdentifiers(),
-            'mustVerifyEmail'  => $user instanceof MustVerifyEmail,
-            'status'           => session('status'),
-            'userSignature'    => $configs->get('signature'),
-            'userInitials'     => $configs->get('initials'),
-            'mfaEnabled'       => (bool) $configs->get('totp_secret'),
+            'timezones' => \DateTimeZone::listIdentifiers(),
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
+            'status' => session('status'),
+            'userSignature' => $configs->get('signature'),
+            'userInitials' => $configs->get('initials'),
+            'mfaEnabled' => (bool) $configs->get('totp_secret'),
             'prefillSignature' => $prefillSignature,
         ]);
     }
@@ -107,13 +107,13 @@ class AccountController extends Controller
         $currentUser = $request->user();
 
         $newUser = User::create([
-            'first_name'         => $request->first_name,
-            'last_name'          => $request->last_name,
-            'email'              => $request->email,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
             'password' => Hash::make(\Illuminate\Support\Str::random(32)),
-            'role'               => $request->role,
-            'account_id'         => $currentUser->account_id,
-            'email_verified_at'       => null,
+            'role' => $request->role,
+            'account_id' => $currentUser->account_id,
+            'email_verified_at' => null,
         ]);
 
         // Send a password-reset link so the invitee can set their own password

@@ -14,9 +14,9 @@ class BulkSubmissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'submitters'         => 'required|array|min:1|max:100',
+            'submitters' => 'required|array|min:1|max:100',
             'submitters.*.email' => 'nullable|email',
-            'submitters.*.name'  => 'nullable|string|max:255',
+            'submitters.*.name' => 'nullable|string|max:255',
             'submitters.*.phone' => 'nullable|string|max:30',
         ];
     }
@@ -25,9 +25,9 @@ class BulkSubmissionRequest extends FormRequest
     public function validRecipients(): array
     {
         return collect($this->input('submitters'))
-            ->filter(fn ($row) => !empty($row['email']) || !empty($row['phone']))
+            ->filter(fn ($row) => ! empty($row['email']) || ! empty($row['phone']))
             ->map(fn ($row) => array_filter([
-                'name'  => $row['name']  ?? null,
+                'name' => $row['name'] ?? null,
                 'email' => $row['email'] ?? null,
                 'phone' => $row['phone'] ?? null,
             ]))

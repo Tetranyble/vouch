@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Facades\DocumentStorage;
 use App\Http\Controllers\Controller;
 use App\Jobs\DispatchWebhookEventJob;
 use App\Jobs\GenerateAuditTrailJob;
@@ -17,9 +18,8 @@ use App\Models\UserConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
-use App\Facades\DocumentStorage;
-use Symfony\Component\HttpFoundation\HeaderUtils;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 
 class SubmitFormController extends Controller
 {
@@ -30,10 +30,10 @@ class SubmitFormController extends Controller
             ->firstOrFail();
 
         $submission = $submitter->submission;
-        $template   = $submission->template;
-        $allFields  = $submission->template_fields ?? $template?->fields ?? [];
-        $schema     = $submission->template_schema ?? $template?->schema ?? [];
-        $documents  = $submission->template_documents ?? $template?->documents ?? [];
+        $template = $submission->template;
+        $allFields = $submission->template_fields ?? $template?->fields ?? [];
+        $schema = $submission->template_schema ?? $template?->schema ?? [];
+        $documents = $submission->template_documents ?? $template?->documents ?? [];
 
         // Only the fields that belong to this submitter role
         $submitterFields = collect($allFields)
@@ -43,11 +43,11 @@ class SubmitFormController extends Controller
 
         // Build document list with public preview URLs
         $documentList = collect($documents)->map(fn ($doc) => [
-            'uuid'         => $doc['uuid'],
-            'filename'     => $doc['filename'] ?? '',
+            'uuid' => $doc['uuid'],
+            'filename' => $doc['filename'] ?? '',
             'content_type' => $doc['content_type'] ?? 'application/pdf',
-            'page_count'   => $doc['page_count'] ?? 1,
-            'url'          => route('submit-form.document', [$slug, $doc['uuid']]),
+            'page_count' => $doc['page_count'] ?? 1,
+            'url' => route('submit-form.document', [$slug, $doc['uuid']]),
         ])->values()->all();
 
         // Build all-submitters list for multi-party UI (role names from template_submitters)
@@ -58,11 +58,11 @@ class SubmitFormController extends Controller
         $allSubmitters = $submission->submitters
             ->sortBy('order')
             ->map(fn ($s) => [
-                'uuid'       => $s->uuid,
-                'name'       => $s->name ?: ($templateSubmitterNames[$s->uuid] ?? null),
-                'email'      => $s->email,
-                'status'     => $s->status,
-                'order'      => $s->order,
+                'uuid' => $s->uuid,
+                'name' => $s->name ?: ($templateSubmitterNames[$s->uuid] ?? null),
+                'email' => $s->email,
+                'status' => $s->status,
+                'order' => $s->order,
                 'is_current' => $s->id === $submitter->id,
             ])
             ->values()
@@ -72,41 +72,41 @@ class SubmitFormController extends Controller
         // Sequential mode: a submitter is awaiting if they haven't been sent yet
         // AND there are uncompleted/undeclined submitters with a lower order.
         $isSequential = ($submission->submitters_order ?? 'random') !== 'random';
-        $isAwaiting   = false;
+        $isAwaiting = false;
 
-        if (!$submitter->completed_at && !$submitter->declined_at) {
-            if ($isSequential || !$submitter->sent_at) {
+        if (! $submitter->completed_at && ! $submitter->declined_at) {
+            if ($isSequential || ! $submitter->sent_at) {
                 $priorPending = $submission->submitters
                     ->where('order', '<', $submitter->order)
-                    ->first(fn ($s) => !$s->completed_at && !$s->declined_at);
+                    ->first(fn ($s) => ! $s->completed_at && ! $s->declined_at);
 
                 $isAwaiting = (bool) $priorPending;
             }
         }
 
         // Only record opened/started events when it's actually their turn
-        if (!$isAwaiting && !$submitter->completed_at && !$submitter->declined_at) {
-            if (!$submitter->opened_at) {
+        if (! $isAwaiting && ! $submitter->completed_at && ! $submitter->declined_at) {
+            if (! $submitter->opened_at) {
                 $submitter->update(['opened_at' => now()]);
                 SubmissionEvent::create([
-                    'submission_id'   => $submitter->submission_id,
-                    'submitter_id'    => $submitter->id,
-                    'account_id'      => $submitter->account_id,
-                    'event_type'      => 'form.viewed',
+                    'submission_id' => $submitter->submission_id,
+                    'submitter_id' => $submitter->id,
+                    'account_id' => $submitter->account_id,
+                    'event_type' => 'form.viewed',
                     'event_timestamp' => now(),
-                    'data'            => ['ip' => request()->ip(), 'ua' => request()->userAgent()],
+                    'data' => ['ip' => request()->ip(), 'ua' => request()->userAgent()],
                 ]);
                 DispatchWebhookEventJob::dispatch('form.viewed', $submitter->account_id, $submitter->id);
             }
 
             $hasStarted = SubmissionEvent::where('submitter_id', $submitter->id)
                 ->where('event_type', 'form.started')->exists();
-            if (!$hasStarted) {
+            if (! $hasStarted) {
                 SubmissionEvent::create([
-                    'submission_id'   => $submitter->submission_id,
-                    'submitter_id'    => $submitter->id,
-                    'account_id'      => $submitter->account_id,
-                    'event_type'      => 'form.started',
+                    'submission_id' => $submitter->submission_id,
+                    'submitter_id' => $submitter->id,
+                    'account_id' => $submitter->account_id,
+                    'event_type' => 'form.started',
                     'event_timestamp' => $submitter->opened_at ?? now(),
                 ]);
                 DispatchWebhookEventJob::dispatch('form.started', $submitter->account_id, $submitter->id);
@@ -126,7 +126,7 @@ class SubmitFormController extends Controller
                 : null;
 
         $previousSignature = null;
-        $previousInitials  = null;
+        $previousInitials = null;
 
         if ($signingUser) {
             $configs = UserConfig::where('user_id', $signingUser->id)
@@ -140,30 +140,30 @@ class SubmitFormController extends Controller
 
             if ($prefillEnabled) {
                 $previousSignature = $configs->get('signature');
-                $previousInitials  = $configs->get('initials');
+                $previousInitials = $configs->get('initials');
             }
         }
 
         return Inertia::render('Public/SubmitForm/Show', [
             'submitter' => [
-                'id'    => $submitter->id,
-                'slug'  => $submitter->slug,
-                'uuid'  => $submitter->uuid,
-                'name'  => $submitter->name,
+                'id' => $submitter->id,
+                'slug' => $submitter->slug,
+                'uuid' => $submitter->uuid,
+                'name' => $submitter->name,
                 'email' => $submitter->email,
             ],
-            'fields'            => $submitterFields,
-            'initialValues'     => $submitter->values ?? [],
-            'documents'         => $documentList,
-            'schema'            => $schema,
-            'template'          => $template ? ['id' => $template->id, 'name' => $template->name] : null,
-            'isCompleted'       => (bool) $submitter->completed_at,
-            'isDeclined'        => (bool) $submitter->declined_at,
-            'isAwaiting'        => $isAwaiting,
-            'declineReason'     => $submitter->metadata['decline_reason'] ?? null,
-            'allSubmitters'     => $allSubmitters,
+            'fields' => $submitterFields,
+            'initialValues' => $submitter->values ?? [],
+            'documents' => $documentList,
+            'schema' => $schema,
+            'template' => $template ? ['id' => $template->id, 'name' => $template->name] : null,
+            'isCompleted' => (bool) $submitter->completed_at,
+            'isDeclined' => (bool) $submitter->declined_at,
+            'isAwaiting' => $isAwaiting,
+            'declineReason' => $submitter->metadata['decline_reason'] ?? null,
+            'allSubmitters' => $allSubmitters,
             'previousSignature' => $previousSignature,
-            'previousInitials'  => $previousInitials,
+            'previousInitials' => $previousInitials,
         ]);
     }
 
@@ -177,12 +177,12 @@ class SubmitFormController extends Controller
         $doc = collect($submitter->submission->template_documents ?? $template?->documents ?? [])
             ->firstWhere('uuid', $attachmentUuid);
 
-        if (!$doc || !DocumentStorage::exists($doc['storage_path'], $submitter->account_id)) {
+        if (! $doc || ! DocumentStorage::exists($doc['storage_path'], $submitter->account_id)) {
             abort(404);
         }
 
         return response(DocumentStorage::get($doc['storage_path'], $submitter->account_id), 200, [
-            'Content-Type'        => $doc['content_type'] ?? 'application/pdf',
+            'Content-Type' => $doc['content_type'] ?? 'application/pdf',
             'Content-Disposition' => HeaderUtils::makeDisposition(
                 HeaderUtils::DISPOSITION_INLINE,
                 basename(str_replace('\\', '/', $doc['filename'] ?? 'document'))
@@ -295,7 +295,7 @@ class SubmitFormController extends Controller
             ->where('order', $justCompleted->order)
             ->every(fn ($s) => $s->completed_at || $s->declined_at);
 
-        if (!$currentGroupDone) {
+        if (! $currentGroupDone) {
             return;
         }
 
@@ -309,9 +309,9 @@ class SubmitFormController extends Controller
             return;
         }
 
-        $submission   = $justCompleted->submission()->with(['template', 'createdByUser'])->first();
+        $submission = $justCompleted->submission()->with(['template', 'createdByUser'])->first();
         $templateName = $submission->template?->name ?? 'Document';
-        $senderName   = $submission->createdByUser?->full_name ?? config('app.name', 'Vouch');
+        $senderName = $submission->createdByUser?->full_name ?? config('app.name', 'Vouch');
 
         $nextGroup = $allSubmitters->where('order', $nextOrder)->whereNull('sent_at');
 

@@ -20,13 +20,13 @@ class CloneTemplateActionTest extends TestCase
     {
         parent::setUp();
         Queue::fake();
-        $this->action = new CloneTemplateAction();
+        $this->action = new CloneTemplateAction;
     }
 
     public function test_creates_clone_with_copy_suffix(): void
     {
         $source = Template::factory()->create(['name' => 'Original Contract']);
-        $user   = User::factory()->create(['account_id' => $source->account_id]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -35,10 +35,10 @@ class CloneTemplateActionTest extends TestCase
 
     public function test_clone_inherits_source_schema_and_fields(): void
     {
-        $fields  = [['id' => 'f1', 'type' => 'text']];
-        $schema  = [['attachment_uuid' => 'abc']];
-        $source  = Template::factory()->create(['fields' => $fields, 'schema' => $schema]);
-        $user    = User::factory()->create(['account_id' => $source->account_id]);
+        $fields = [['id' => 'f1', 'type' => 'text']];
+        $schema = [['attachment_uuid' => 'abc']];
+        $source = Template::factory()->create(['fields' => $fields, 'schema' => $schema]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -49,8 +49,8 @@ class CloneTemplateActionTest extends TestCase
     public function test_clone_inherits_submitters(): void
     {
         $submitters = [['name' => 'Signer', 'uuid' => 'abc123']];
-        $source     = Template::factory()->create(['submitters' => $submitters]);
-        $user       = User::factory()->create(['account_id' => $source->account_id]);
+        $source = Template::factory()->create(['submitters' => $submitters]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -60,7 +60,7 @@ class CloneTemplateActionTest extends TestCase
     public function test_clone_belongs_to_cloning_user_and_account(): void
     {
         $source = Template::factory()->create();
-        $user   = User::factory()->create(['account_id' => $source->account_id]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -71,7 +71,7 @@ class CloneTemplateActionTest extends TestCase
     public function test_clone_source_is_set_to_clone(): void
     {
         $source = Template::factory()->create();
-        $user   = User::factory()->create(['account_id' => $source->account_id]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -81,7 +81,7 @@ class CloneTemplateActionTest extends TestCase
     public function test_clone_stays_in_same_folder(): void
     {
         $source = Template::factory()->create();
-        $user   = User::factory()->create(['account_id' => $source->account_id]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -91,7 +91,7 @@ class CloneTemplateActionTest extends TestCase
     public function test_clone_gets_unique_slug(): void
     {
         $source = Template::factory()->create();
-        $user   = User::factory()->create(['account_id' => $source->account_id]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
@@ -101,14 +101,14 @@ class CloneTemplateActionTest extends TestCase
     public function test_dispatches_reindex_job_for_clone(): void
     {
         $source = Template::factory()->create();
-        $user   = User::factory()->create(['account_id' => $source->account_id]);
+        $user = User::factory()->create(['account_id' => $source->account_id]);
 
         $clone = $this->action->execute($source, $user);
 
-        Queue::assertPushed(ReindexSearchEntryJob::class, fn ($job) =>
-            $job->recordType === 'Template' && $job->recordId === $clone->id
+        Queue::assertPushed(ReindexSearchEntryJob::class, fn ($job) => $job->recordType === 'Template' && $job->recordId === $clone->id
         );
     }
+
     public function test_rejects_cloning_a_template_from_another_account(): void
     {
         $source = Template::factory()->create();
@@ -117,5 +117,4 @@ class CloneTemplateActionTest extends TestCase
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
         $this->action->execute($source, $user);
     }
-
 }

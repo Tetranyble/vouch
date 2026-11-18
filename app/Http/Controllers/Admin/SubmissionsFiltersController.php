@@ -36,22 +36,22 @@ class SubmissionsFiltersController extends Controller
             ->orderBy('first_name')
             ->get(['id', 'first_name', 'last_name', 'email'])
             ->map(fn ($u) => [
-                'id'   => $u->id,
+                'id' => $u->id,
                 'name' => trim("{$u->first_name} {$u->last_name}") ?: $u->email,
             ]);
 
         return response()->json([
-            'saved'     => $saved,
+            'saved' => $saved,
             'templates' => $templates,
-            'authors'   => $authors,
+            'authors' => $authors,
         ]);
     }
 
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'filters'            => 'required|array',
-            'filters.*'          => 'nullable|string',
+            'filters' => 'required|array',
+            'filters.*' => 'nullable|string',
         ]);
 
         $filters = collect($request->input('filters'))

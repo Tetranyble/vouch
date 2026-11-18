@@ -19,10 +19,10 @@ class SubmissionsExportController extends Controller
 
         if ($status = $request->get('status')) {
             match ($status) {
-                'pending'   => $query->pending(),
+                'pending' => $query->pending(),
                 'completed' => $query->completed(),
-                'declined'  => $query->declined(),
-                default     => null,
+                'declined' => $query->declined(),
+                default => null,
             };
         }
 
@@ -38,22 +38,22 @@ class SubmissionsExportController extends Controller
             $fields = $submission->template_fields ?? $submission->template?->fields ?? [];
             foreach ($fields as $field) {
                 $key = $field['uuid'] ?? null;
-                if ($key && !isset($fieldNames[$key])) {
+                if ($key && ! isset($fieldNames[$key])) {
                     $fieldNames[$key] = $field['name'] ?? $field['type'] ?? $key;
                 }
             }
         }
 
-        $filename = 'submissions-' . now()->format('Y-m-d') . '.csv';
+        $filename = 'submissions-'.now()->format('Y-m-d').'.csv';
 
         $headers = [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
         $callback = function () use ($submissions, $fieldNames) {
             $handle = fopen('php://output', 'w');
-            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
 
             // Header row
             $header = [

@@ -17,19 +17,19 @@ class StartFormTest extends TestCase
     private function makeTemplate(array $overrides = []): Template
     {
         $account = Account::factory()->create();
-        $author  = User::factory()->create(['account_id' => $account->id]);
-        $folder  = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
+        $author = User::factory()->create(['account_id' => $account->id]);
+        $folder = TemplateFolder::factory()->create(['account_id' => $account->id, 'author_id' => $author->id]);
 
         $submitters = [
             ['name' => 'First Party', 'uuid' => (string) \Illuminate\Support\Str::uuid()],
         ];
 
         return Template::factory()->create(array_merge([
-            'account_id'  => $account->id,
-            'author_id'   => $author->id,
-            'folder_id'   => $folder->id,
+            'account_id' => $account->id,
+            'author_id' => $author->id,
+            'folder_id' => $folder->id,
             'shared_link' => true,
-            'submitters'  => $submitters,
+            'submitters' => $submitters,
         ], $overrides));
     }
 
@@ -41,11 +41,10 @@ class StartFormTest extends TestCase
         $response = $this->get("/d/{$template->slug}");
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) =>
-            $page->component('Public/StartForm/Show')
-                ->has('template')
-                ->where('template.slug', $template->slug)
-                ->where('template.name', $template->name)
+        $response->assertInertia(fn ($page) => $page->component('Public/StartForm/Show')
+            ->has('template')
+            ->where('template.slug', $template->slug)
+            ->where('template.name', $template->name)
         );
     }
 
@@ -74,14 +73,14 @@ class StartFormTest extends TestCase
         // A submission was created for this template
         $this->assertDatabaseHas('submissions', [
             'template_id' => $template->id,
-            'account_id'  => $template->account_id,
-            'source'      => 'link',
+            'account_id' => $template->account_id,
+            'source' => 'link',
         ]);
 
         // A submitter was created
         $this->assertDatabaseHas('submitters', [
-            'name'       => 'Alice',
-            'email'      => 'alice@example.com',
+            'name' => 'Alice',
+            'email' => 'alice@example.com',
             'account_id' => $template->account_id,
         ]);
     }
@@ -97,7 +96,7 @@ class StartFormTest extends TestCase
 
         $this->assertDatabaseHas('submissions', [
             'template_id' => $template->id,
-            'source'      => 'link',
+            'source' => 'link',
         ]);
     }
 

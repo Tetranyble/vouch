@@ -12,7 +12,7 @@ class IntegrationsController extends Controller
 {
     public function index(Request $request)
     {
-        $user      = $request->user();
+        $user = $request->user();
         $accountId = $user->account_id;
 
         // Single query for all account-level config keys we care about
@@ -27,7 +27,7 @@ class IntegrationsController extends Controller
             ->pluck('value', 'key');
 
         // SMTP — stored as array with 'host', 'port', etc.
-        $smtp     = $configs->get('email_smtp');
+        $smtp = $configs->get('email_smtp');
         $smtpHost = is_array($smtp) ? ($smtp['host'] ?? null) : null;
 
         // Twilio — configured when account SID is present
@@ -38,7 +38,7 @@ class IntegrationsController extends Controller
 
         // E-Sign — configured when a certificate exists
         $esignName = $configs->get('esign_certificate_name');
-        $hasEsign  = (bool) $configs->get('esign_certificate');
+        $hasEsign = (bool) $configs->get('esign_certificate');
 
         // Webhooks — count of active endpoints
         $webhookCount = WebhookUrl::where('account_id', $accountId)->count();
@@ -57,18 +57,18 @@ class IntegrationsController extends Controller
                 ],
                 'smtp' => [
                     'configured' => (bool) $smtpHost,
-                    'host'       => $smtpHost,
+                    'host' => $smtpHost,
                 ],
                 'sms' => [
                     'configured' => (bool) $twilioSid,
                 ],
                 'storage' => [
-                    'driver'     => $storageDriver,
+                    'driver' => $storageDriver,
                     'configured' => $storageDriver !== 'local',
                 ],
                 'esign' => [
                     'configured' => $hasEsign,
-                    'name'       => $esignName,
+                    'name' => $esignName,
                 ],
             ],
         ]);

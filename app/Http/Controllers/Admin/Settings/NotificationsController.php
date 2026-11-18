@@ -16,8 +16,8 @@ class NotificationsController extends Controller
 
     public function index(Request $request)
     {
-        $user     = $request->user();
-        $configs  = AccountConfig::where('account_id', $user->account_id)
+        $user = $request->user();
+        $configs = AccountConfig::where('account_id', $user->account_id)
             ->whereIn('key', self::KEYS)
             ->pluck('value', 'key');
 
@@ -31,12 +31,12 @@ class NotificationsController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'send_completion_email'  => 'boolean',
-            'send_reminder_email'    => 'boolean',
-            'reminder_after_days'    => 'nullable|integer|min:1|max:30',
-            'bcc_emails'             => 'nullable|string|max:1000',
-            'completion_redirect_url'=> 'nullable|url',
-            'allow_decline'          => 'boolean',
+            'send_completion_email' => 'boolean',
+            'send_reminder_email' => 'boolean',
+            'reminder_after_days' => 'nullable|integer|min:1|max:30',
+            'bcc_emails' => 'nullable|string|max:1000',
+            'completion_redirect_url' => 'nullable|url',
+            'allow_decline' => 'boolean',
         ]);
 
         foreach (self::KEYS as $key) {

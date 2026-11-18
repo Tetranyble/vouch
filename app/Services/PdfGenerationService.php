@@ -2,23 +2,24 @@
 
 namespace App\Services;
 
+use App\Facades\DocumentStorage;
 use App\Models\Submission;
 use App\Models\Submitter;
-use App\Facades\DocumentStorage;
 use App\Support\TemporaryDocumentFile;
-use Illuminate\Support\Str;
 use setasign\Fpdi\Tcpdf\Fpdi;
 
 class PdfGenerationService
 {
     public function __construct(private readonly CompletedDocumentWriter $writer) {}
+
     private const FONT_SIZE = 11;
+
     private const CHECK_CHAR = "\xE2\x9C\x94"; // ✔
 
     public function generateForSubmitter(Submitter $submitter): array
     {
         $submission = $submitter->submission()->with('template')->first();
-        if (!$submission) {
+        if (! $submission) {
             return [];
         }
 
@@ -41,12 +42,18 @@ class PdfGenerationService
         $results = [];
         foreach ($schema as $schemaItem) {
             $attachmentUuid = $schemaItem['attachment_uuid'] ?? null;
-            if (!$attachmentUuid) continue;
+            if (! $attachmentUuid) {
+                continue;
+            }
 
             $docMeta = collect($documents)->firstWhere('uuid', $attachmentUuid);
-            if (!$docMeta || empty($docMeta['storage_path'])) continue;
+            if (! $docMeta || empty($docMeta['storage_path'])) {
+                continue;
+            }
 
-            if (!DocumentStorage::exists($docMeta['storage_path'], $submission->account_id)) continue;
+            if (! DocumentStorage::exists($docMeta['storage_path'], $submission->account_id)) {
+                continue;
+            }
 
             $pdf = $this->buildFilledPdf(
                 $docMeta['storage_path'],
@@ -56,7 +63,7 @@ class PdfGenerationService
                 $submission->account_id
             );
 
-            $filename = ($schemaItem['name'] ?? $template?->name ?? 'document') . '.pdf';
+            $filename = ($schemaItem['name'] ?? $template?->name ?? 'document').'.pdf';
             $completed = $this->writer->write(
                 $submitter, $filename, $attachmentUuid, $pdf, 'signed-document'
             );
@@ -79,7 +86,7 @@ class PdfGenerationService
         );
 
         try {
-            $pdf = new Fpdi();
+            $pdf = new Fpdi;
             $pdf->setPrintHeader(false);
             $pdf->setPrintFooter(false);
 
@@ -124,8 +131,12 @@ class PdfGenerationService
 
             $areas = $field['areas'] ?? [];
             foreach ($areas as $area) {
-                if (($area['attachment_uuid'] ?? null) !== $attachmentUuid) continue;
-                if (($area['page'] ?? 0) !== $pageIndex) continue;
+                if (($area['attachment_uuid'] ?? null) !== $attachmentUuid) {
+                    continue;
+                }
+                if (($area['page'] ?? 0) !== $pageIndex) {
+                    continue;
+                }
 
                 $x = ($area['x'] ?? 0) * $pageW;
                 $y = ($area['y'] ?? 0) * $pageH;
@@ -133,7 +144,7 @@ class PdfGenerationService
                 $h = ($area['h'] ?? 0) * $pageH;
 
                 $prefs = $field['preferences'] ?? [];
-                $fontSize = isset($prefs['font_size']) ? (int)$prefs['font_size'] : $this->autoFontSize($pageW, self::FONT_SIZE);
+                $fontSize = isset($prefs['font_size']) ? (int) $prefs['font_size'] : $this->autoFontSize($pageW, self::FONT_SIZE);
                 $fillColor = $this->hexToRgb($prefs['color'] ?? null);
                 $bgColor = $this->hexToRgb($prefs['background'] ?? null);
 
@@ -144,11 +155,11 @@ class PdfGenerationService
 
                 match ($fieldType) {
                     'signature', 'initials', 'stamp', 'image' => $this->drawImage($pdf, $value, $x, $y, $w, $h, $accountId),
-                    'checkbox'                                  => $this->drawCheckbox($pdf, $value, $x, $y, $w, $h, $fontSize),
-                    'radio', 'multiple'                         => $this->drawOption($pdf, $value, $field, $area, $x, $y, $w, $h, $fontSize),
-                    'date'                                      => $this->drawText($pdf, $this->formatDate($value, $prefs), $x, $y, $w, $h, $fontSize, $prefs, $fillColor),
-                    'number'                                    => $this->drawText($pdf, $this->formatNumber($value, $prefs), $x, $y, $w, $h, $fontSize, $prefs, $fillColor),
-                    default                                     => $this->drawText($pdf, (string) $value, $x, $y, $w, $h, $fontSize, $prefs, $fillColor),
+                    'checkbox' => $this->drawCheckbox($pdf, $value, $x, $y, $w, $h, $fontSize),
+                    'radio', 'multiple' => $this->drawOption($pdf, $value, $field, $area, $x, $y, $w, $h, $fontSize),
+                    'date' => $this->drawText($pdf, $this->formatDate($value, $prefs), $x, $y, $w, $h, $fontSize, $prefs, $fillColor),
+                    'number' => $this->drawText($pdf, $this->formatNumber($value, $prefs), $x, $y, $w, $h, $fontSize, $prefs, $fillColor),
+                    default => $this->drawText($pdf, (string) $value, $x, $y, $w, $h, $fontSize, $prefs, $fillColor),
                 };
             }
         }
@@ -156,14 +167,16 @@ class PdfGenerationService
 
     private function drawText(Fpdi $pdf, string $text, float $x, float $y, float $w, float $h, int $fontSize, array $prefs, ?array $color): void
     {
-        if ($text === '') return;
+        if ($text === '') {
+            return;
+        }
 
         $align = strtoupper(substr($prefs['align'] ?? 'L', 0, 1));
         $fontStyle = match ($prefs['font_type'] ?? 'none') {
-            'bold'        => 'B',
-            'italic'      => 'I',
+            'bold' => 'B',
+            'italic' => 'I',
             'bold_italic' => 'BI',
-            default       => '',
+            default => '',
         };
 
         $pdf->SetFont('helvetica', $fontStyle, $fontSize);
@@ -193,12 +206,18 @@ class PdfGenerationService
         $tmpFile = null;
         try {
             if (is_string($value) && str_starts_with($value, 'data:image')) {
-                if (strlen($value) > 8 * 1024 * 1024) return;
+                if (strlen($value) > 8 * 1024 * 1024) {
+                    return;
+                }
                 $dataUrl = preg_match('/^data:image\/(png|jpeg);base64,([A-Za-z0-9+\/=]+)$/D', $value, $matches)
                     ? $matches : null;
-                if (! $dataUrl) return;
+                if (! $dataUrl) {
+                    return;
+                }
                 $data = base64_decode($matches[2], true);
-                if ($data === false) return;
+                if ($data === false) {
+                    return;
+                }
                 $tmpFile = TemporaryDocumentFile::create($data, 'ds_img_', $matches[1] === 'png' ? 'png' : 'jpg');
                 $imgPath = $tmpFile;
             } elseif (is_string($value) && DocumentStorage::exists($value, $accountId)) {
@@ -210,7 +229,9 @@ class PdfGenerationService
             }
 
             [$imgW, $imgH] = getimagesize($imgPath);
-            if (!$imgW || !$imgH) return;
+            if (! $imgW || ! $imgH) {
+                return;
+            }
 
             $scale = min($w / $imgW, $h / $imgH);
             $drawW = $imgW * $scale;
@@ -230,7 +251,9 @@ class PdfGenerationService
 
     private function drawCheckbox(Fpdi $pdf, mixed $value, float $x, float $y, float $w, float $h, int $fontSize): void
     {
-        if ($value !== true && $value !== 'true' && $value !== '1' && $value !== 1) return;
+        if ($value !== true && $value !== 'true' && $value !== '1' && $value !== 1) {
+            return;
+        }
 
         $pdf->SetFont('zapfdingbats', '', min($fontSize * 1.2, $h * 0.8));
         $pdf->SetTextColor(0, 0, 0);
@@ -242,10 +265,14 @@ class PdfGenerationService
     private function drawOption(Fpdi $pdf, mixed $value, array $field, array $area, float $x, float $y, float $w, float $h, int $fontSize): void
     {
         $optionUuid = $area['option_uuid'] ?? null;
-        if (!$optionUuid) return;
+        if (! $optionUuid) {
+            return;
+        }
 
         $option = collect($field['options'] ?? [])->firstWhere('uuid', $optionUuid);
-        if (!$option) return;
+        if (! $option) {
+            return;
+        }
 
         $optionValue = $option['value'] ?? '';
         $isSelected = is_array($value)
@@ -259,12 +286,15 @@ class PdfGenerationService
 
     private function formatDate(mixed $value, array $prefs): string
     {
-        if (!$value) return '';
+        if (! $value) {
+            return '';
+        }
         $format = $prefs['format'] ?? 'MM/DD/YYYY';
         try {
             $date = new \DateTime($value);
             $php = str_replace(['MM', 'DD', 'YYYY', 'YY', 'MON'],
-                               ['m',  'd',  'Y',    'y',  'M'], $format);
+                ['m',  'd',  'Y',    'y',  'M'], $format);
+
             return $date->format($php);
         } catch (\Throwable) {
             return (string) $value;
@@ -273,8 +303,11 @@ class PdfGenerationService
 
     private function formatNumber(mixed $value, array $prefs): string
     {
-        if (!is_numeric($value)) return (string) $value;
+        if (! is_numeric($value)) {
+            return (string) $value;
+        }
         $decimals = (int) ($prefs['decimal_places'] ?? 0);
+
         return number_format((float) $value, $decimals);
     }
 
@@ -285,15 +318,20 @@ class PdfGenerationService
 
     private function hexToRgb(?string $hex): ?array
     {
-        if (!$hex) return null;
+        if (! $hex) {
+            return null;
+        }
         $hex = ltrim($hex, '#');
-        if (strlen($hex) !== 6) return null;
+        if (strlen($hex) !== 6) {
+            return null;
+        }
+
         return [hexdec(substr($hex, 0, 2)), hexdec(substr($hex, 2, 2)), hexdec(substr($hex, 4, 2))];
     }
 
     private function generatePlaceholderDocument(Submitter $submitter, Submission $submission): array
     {
-        $pdf = new \TCPDF();
+        $pdf = new \TCPDF;
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->AddPage();
@@ -301,12 +339,12 @@ class PdfGenerationService
         $pdf->Cell(0, 10, 'Document Signed', 0, 1, 'C');
         $pdf->SetFont('helvetica', '', 12);
         $pdf->Ln(5);
-        $pdf->Cell(0, 8, 'Template: ' . ($submission->template?->name ?? 'Unknown'), 0, 1);
-        $pdf->Cell(0, 8, 'Signed by: ' . ($submitter->name ?: $submitter->email ?: 'Unknown'), 0, 1);
-        $pdf->Cell(0, 8, 'Signed at: ' . now()->format('Y-m-d H:i:s'), 0, 1);
+        $pdf->Cell(0, 8, 'Template: '.($submission->template?->name ?? 'Unknown'), 0, 1);
+        $pdf->Cell(0, 8, 'Signed by: '.($submitter->name ?: $submitter->email ?: 'Unknown'), 0, 1);
+        $pdf->Cell(0, 8, 'Signed at: '.now()->format('Y-m-d H:i:s'), 0, 1);
 
         $values = $submitter->values ?? [];
-        if (!empty($values)) {
+        if (! empty($values)) {
             $pdf->Ln(5);
             $pdf->SetFont('helvetica', 'B', 12);
             $pdf->Cell(0, 8, 'Form Values:', 0, 1);
@@ -315,7 +353,9 @@ class PdfGenerationService
             $fields = $submission->template_fields ?? $submission->template?->fields ?? [];
             foreach ($fields as $field) {
                 $uuid = $field['uuid'] ?? null;
-                if (!$uuid || !isset($values[$uuid])) continue;
+                if (! $uuid || ! isset($values[$uuid])) {
+                    continue;
+                }
 
                 $label = $field['name'] ?? $uuid;
                 $val = is_array($values[$uuid]) ? implode(', ', $values[$uuid]) : $values[$uuid];
@@ -330,7 +370,7 @@ class PdfGenerationService
 
         $completed = $this->writer->write(
             $submitter,
-            ($submission->template?->name ?? 'document') . '.pdf',
+            ($submission->template?->name ?? 'document').'.pdf',
             null,
             $pdf->Output('', 'S'),
             'signed-document'
