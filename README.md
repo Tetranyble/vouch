@@ -2,6 +2,7 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Tetranyble/vouch/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Tetranyble/vouch/tree/main)
 [![Quality and regression checks](https://github.com/Tetranyble/vouch/actions/workflows/quality.yml/badge.svg)](https://github.com/Tetranyble/vouch/actions/workflows/quality.yml)
+[![Latest release](https://img.shields.io/github/v/release/Tetranyble/vouch?sort=semver)](https://github.com/Tetranyble/vouch/releases/latest)
 
 <p align="center">
   <img src="docs/assets/pensuh-logo-1024.png" alt="Pensuh logo" width="160">
@@ -161,6 +162,10 @@ node scripts/check-design-tokens.mjs
 6. Cache framework configuration and views with `php artisan optimize`.
 7. Start or restart queue workers and the scheduler.
 8. Run the full test and frontend-check suite in CI before release.
+
+## Releases
+
+Download the deployable package and its SHA-256 checksum from the [latest GitHub Release](https://github.com/Tetranyble/vouch/releases/latest).
 
 ## Documentation
 
