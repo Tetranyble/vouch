@@ -76,7 +76,7 @@ jobs:
             fi
       - run:
           name: Create semantic GitHub release
-          command: npx -p node@v24 -c "npm run release"
+          command: GIT_CREDENTIALS="x-access-token:${GH_TOKEN}" npx -p node@v24 -c "npm run release"
       - store_artifacts:
           path: dist
           destination: releases
