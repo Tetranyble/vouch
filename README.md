@@ -1,5 +1,11 @@
 # Vouch
 
+<p align="center">
+  <img src="docs/assets/pensuh-logo-1024.png" alt="Pensuh logo" width="160">
+</p>
+
+<p align="center"><em>Vouch is a Pensuh company.</em></p>
+
 Vouch is a multi-tenant document-signing application built with Laravel 12, Inertia, React, and TypeScript. Teams can create document templates, assign signing fields, invite recipients, collect signatures, and securely deliver completed documents.
 
 ## Features
