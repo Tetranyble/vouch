@@ -5,10 +5,10 @@
 [![Latest release](https://img.shields.io/github/v/release/Tetranyble/vouch?sort=semver)](https://github.com/Tetranyble/vouch/releases/latest)
 
 <p align="center">
-  <img src="docs/assets/pensuh-logo-1024.png" alt="Pensuh logo" width="160">
+  <img src="docs/assets/vouch_logo_correct_1024.svg" alt="Vouch logo" width="160">
 </p>
 
-<p align="center"><em>Vouch is a Pensuh company.</em></p>
+Vouch is an electronic document-signing project from the Pensuh Innovation / Tetranyble ecosystem. Pensuh is the education technology product at [pensuh.com](https://pensuh.com), and Tetranyble's broader software portfolio is at [tetranyble.com](https://tetranyble.com).
 
 Vouch is a multi-tenant document-signing application built with Laravel 12, Inertia, React, and TypeScript. Teams can create document templates, assign signing fields, invite recipients, collect signatures, and securely deliver completed documents.
 
@@ -166,6 +166,16 @@ node scripts/check-design-tokens.mjs
 ## Releases
 
 Download the deployable package and its SHA-256 checksum from the [latest GitHub Release](https://github.com/Tetranyble/vouch/releases/latest).
+
+## Company and ecosystem
+
+- **[Tetranyble](https://tetranyble.com)** — software studio and portfolio home.
+- **[Pensuh](https://pensuh.com)** — school and institutional management software associated with Pensuh Innovation.
+- **[Vouch](https://github.com/Tetranyble/vouch)** — open-source electronic document signing software (this project).
+
+These products have distinct purposes and are not presented as interchangeable services. Commercial support, hosted deployments, and any paid offering should have their own explicitly published terms.
+
+For copyright, attribution, and license details, see [LICENSE](LICENSE). Third-party dependencies remain subject to their respective licenses.
 
 ## License
 

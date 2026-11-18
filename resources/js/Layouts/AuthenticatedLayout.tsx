@@ -13,6 +13,7 @@ import {
 } from '@/Components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/Components/ui/sheet';
 import VouchLogo from '@/Components/VouchLogo';
+import VouchEcosystemLinks from '@/Components/VouchEcosystemLinks';
 
 const navItems = [
     { label: 'Templates', href: '/templates', icon: FileText, match: '/templates' },
@@ -342,6 +343,13 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode;
                     {children}
                 </main>
             )}
+
+            <footer className="border-t bg-card/70 px-4 py-5 md:px-6">
+                <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
+                    <p>© 2026 Vouch. Secure document signing.</p>
+                    <VouchEcosystemLinks />
+                </div>
+            </footer>
         </div>
     );
 }

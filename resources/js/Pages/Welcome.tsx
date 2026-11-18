@@ -1,5 +1,6 @@
 import type { AuthUser } from '@/types/vouch';
 import { Head, Link } from '@inertiajs/react';
+import VouchEcosystemLinks from '@/Components/VouchEcosystemLinks';
 
 function VouchMark({ className = '' }) {
     return (
@@ -362,8 +363,11 @@ export default function Welcome({ auth }: { auth?: { user: AuthUser | null } }) 
                     </section>
 
                     <footer className="border-t border-border bg-card/70">
-                        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between lg:px-8">
-                            <p>© 2026 Vouch. Secure document signing. · Made with love at <a href="https://pensuh.com" className="hover:text-foreground transition-colors underline underline-offset-2" target="_blank" rel="noopener noreferrer">Pensuh</a></p>
+                        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground lg:px-8">
+                            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <p>© 2026 Vouch. Secure document signing.</p>
+                                <VouchEcosystemLinks />
+                            </div>
                             <div className="flex gap-5">
                                 <Link href={route('privacy')} className="hover:text-foreground transition-colors">Privacy</Link>
                                 <Link href={route('terms')} className="hover:text-foreground transition-colors">Terms</Link>

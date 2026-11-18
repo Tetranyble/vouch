@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { AuthUser } from '@/types/vouch';
 import { Link } from '@inertiajs/react';
+import VouchEcosystemLinks from '@/Components/VouchEcosystemLinks';
 
 function VouchMark({ dark = false }) {
     const color = dark ? 'border-background' : 'border-foreground';
@@ -49,8 +50,11 @@ export default function PublicLayout({ children, dark = false, activeLink = '', 
                     {children}
 
                     <footer className="border-t border-background/10 bg-foreground">
-                        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-background/55 md:flex-row md:items-center md:justify-between lg:px-8">
-                            <p>© 2026 Vouch. Secure document signing. · Made with love at <a href="https://pensuh.com" className={dark ? 'hover:text-background transition-colors underline underline-offset-2' : 'hover:text-foreground transition-colors underline underline-offset-2'} target="_blank" rel="noopener noreferrer">Pensuh</a></p>
+                        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-background/55 lg:px-8">
+                            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <p>© 2026 Vouch. Secure document signing.</p>
+                                <VouchEcosystemLinks />
+                            </div>
                             <div className="flex gap-5">
                                 <Link href={route('privacy')} className={activeLink === 'Privacy' ? 'text-background' : 'hover:text-background transition-colors'}>Privacy</Link>
                                 <Link href={route('terms')} className={activeLink === 'Terms' ? 'text-background' : 'hover:text-background transition-colors'}>Terms</Link>
@@ -89,8 +93,11 @@ export default function PublicLayout({ children, dark = false, activeLink = '', 
                 {children}
 
                 <footer className="border-t border-border bg-card/70">
-                    <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between lg:px-8">
-                        <p>© 2026 Vouch. Secure document signing.</p>
+                    <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground lg:px-8">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <p>© 2026 Vouch. Secure document signing.</p>
+                            <VouchEcosystemLinks />
+                        </div>
                         <div className="flex gap-5">
                             <Link href={route('privacy')} className={activeLink === 'Privacy' ? 'text-foreground font-medium' : 'hover:text-foreground transition-colors'}>Privacy</Link>
                             <Link href={route('terms')} className={activeLink === 'Terms' ? 'text-foreground font-medium' : 'hover:text-foreground transition-colors'}>Terms</Link>
