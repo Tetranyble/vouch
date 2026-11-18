@@ -19,7 +19,6 @@ class CreateSubmissionAction
         private readonly InviteSubmitterAction $inviteSubmitter,
     ) {}
 
-
     /**
      * Create a submission from a template, seed its submitters, and dispatch
      * invitation / webhook / search-index side-effects.
