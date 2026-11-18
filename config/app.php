@@ -56,6 +56,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Contact Addresses
+    |--------------------------------------------------------------------------
+    |
+    | These addresses are shown on public legal pages. They are separate from
+    | mail delivery settings so the public contact can be changed independently.
+    |
+    */
+
+    'contact' => [
+        'privacy_email' => env('VOUCH_PRIVACY_EMAIL', 'support@pensuh.com'),
+        'security_email' => env('VOUCH_SECURITY_EMAIL', 'support@pensuh.com'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

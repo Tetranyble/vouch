@@ -2,7 +2,7 @@ import type { AuthUser } from '@/types/vouch';
 import { Head } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 
-export default function Privacy({ auth }: { auth?: { user: AuthUser | null } }) {
+export default function Privacy({ auth, contact }: { auth?: { user: AuthUser | null }; contact: { privacy_email: string } }) {
     return (
         <PublicLayout auth={auth} activeLink="Privacy">
             <Head title="Privacy Policy — Vouch" />
@@ -46,7 +46,7 @@ export default function Privacy({ auth }: { auth?: { user: AuthUser | null } }) 
                         </section>
                         <section className="rounded-md bg-background p-6">
                             <h2 className="text-xl font-semibold text-foreground">Contact</h2>
-                            <p className="mt-2">For privacy questions, contact <span className="font-semibold text-primary">privacy@vouch.example</span>.</p>
+                            <p className="mt-2">For privacy questions, contact <a className="font-semibold text-primary hover:underline" href={`mailto:${contact.privacy_email}`}>{contact.privacy_email}</a>.</p>
                         </section>
                     </div>
                 </article>

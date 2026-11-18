@@ -8,7 +8,7 @@
   <img src="docs/assets/vouch_logo_correct_1024.svg" alt="Vouch logo" width="160">
 </p>
 
-Vouch is an electronic document-signing project from the Pensuh Innovation / Tetranyble ecosystem. Pensuh is the education technology product at [pensuh.com](https://pensuh.com), and Tetranyble's broader software portfolio is at [tetranyble.com](https://tetranyble.com).
+> Vouch is an electronic document-signing project from the Pensuh Innovation / Tetranyble ecosystem. Pensuh is the education technology product at [pensuh.com](https://pensuh.com), and Tetranyble's broader software portfolio is at [tetranyble.com](https://tetranyble.com).
 
 Vouch is a multi-tenant document-signing application built with Laravel 12, Inertia, React, and TypeScript. Teams can create document templates, assign signing fields, invite recipients, collect signatures, and securely deliver completed documents.
 

@@ -2,7 +2,7 @@ import type { AuthUser } from '@/types/vouch';
 import { Head, Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 
-export default function Security({ auth }: { auth?: { user: AuthUser | null } }) {
+export default function Security({ auth, contact }: { auth?: { user: AuthUser | null }; contact: { security_email: string } }) {
     return (
         <PublicLayout auth={auth} dark activeLink="Security">
             <Head title="Security — Vouch" />
@@ -65,7 +65,7 @@ export default function Security({ auth }: { auth?: { user: AuthUser | null } })
                             <p className="mt-3 max-w-2xl text-primary-foreground/70">Contact our security team for responsible disclosure, compliance requests, or enterprise security reviews.</p>
                         </div>
                         <a
-                            href="mailto:security@vouch.example"
+                            href={`mailto:${contact.security_email}`}
                             className="inline-flex justify-center rounded-md bg-background px-7 py-4 text-sm font-semibold text-primary transition hover:bg-primary-soft"
                         >
                             Contact security
