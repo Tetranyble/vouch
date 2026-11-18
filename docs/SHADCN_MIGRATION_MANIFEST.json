@@ -1,0 +1,126 @@
+{
+  "removed_breeze_components": [
+    "ApplicationLogo",
+    "Checkbox",
+    "DangerButton",
+    "Dropdown",
+    "InputError",
+    "InputLabel",
+    "Modal",
+    "NavLink",
+    "PrimaryButton",
+    "ResponsiveNavLink",
+    "SecondaryButton",
+    "TextInput"
+  ],
+  "converted_files": {
+    "Layouts/AuthenticatedLayout.tsx": {
+      "buttons": 2,
+      "inputs": 0,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Admin/Settings/Account.tsx": {
+      "buttons": 4,
+      "inputs": 1,
+      "labels": 1,
+      "textareas": 0
+    },
+    "Pages/Admin/Settings/Esign.tsx": {
+      "buttons": 0,
+      "inputs": 1,
+      "labels": 3,
+      "textareas": 0
+    },
+    "Pages/Admin/Settings/Mfa.tsx": {
+      "buttons": 1,
+      "inputs": 0,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Admin/Settings/Notifications.tsx": {
+      "buttons": 0,
+      "inputs": 1,
+      "labels": 4,
+      "textareas": 0
+    },
+    "Pages/Admin/Settings/Personalization.tsx": {
+      "buttons": 1,
+      "inputs": 2,
+      "labels": 5,
+      "textareas": 1
+    },
+    "Pages/Admin/Settings/Sms.tsx": {
+      "buttons": 0,
+      "inputs": 0,
+      "labels": 3,
+      "textareas": 0
+    },
+    "Pages/Admin/Settings/Sso.tsx": {
+      "buttons": 0,
+      "inputs": 1,
+      "labels": 4,
+      "textareas": 1
+    },
+    "Pages/Admin/Settings/Webhooks.tsx": {
+      "buttons": 4,
+      "inputs": 1,
+      "labels": 1,
+      "textareas": 0
+    },
+    "Pages/Admin/Submissions/Index.tsx": {
+      "buttons": 1,
+      "inputs": 0,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Admin/Templates/Builder.tsx": {
+      "buttons": 15,
+      "inputs": 2,
+      "labels": 6,
+      "textareas": 1
+    },
+    "Pages/Admin/Templates/Index.tsx": {
+      "buttons": 2,
+      "inputs": 0,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Admin/Templates/Preferences.tsx": {
+      "buttons": 0,
+      "inputs": 3,
+      "labels": 3,
+      "textareas": 1
+    },
+    "Pages/Admin/Templates/Show.tsx": {
+      "buttons": 3,
+      "inputs": 0,
+      "labels": 5,
+      "textareas": 1
+    },
+    "Pages/Admin/VerifySignature.tsx": {
+      "buttons": 2,
+      "inputs": 1,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Auth/Login.tsx": {
+      "buttons": 0,
+      "inputs": 1,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Profile/Partials/UserSignatureForm.tsx": {
+      "buttons": 2,
+      "inputs": 0,
+      "labels": 0,
+      "textareas": 0
+    },
+    "Pages/Public/SubmitForm/Show.tsx": {
+      "buttons": 7,
+      "inputs": 8,
+      "labels": 3,
+      "textareas": 2
+    }
+  }
+}

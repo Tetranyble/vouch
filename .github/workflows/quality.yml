@@ -1,0 +1,51 @@
+name: Quality and regression checks
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+    services: {}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, xml, xmlwriter, sqlite3, pdo_sqlite, fileinfo, gd, zip
+          coverage: none
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Laravel bootstrap
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Enforce Tetranyble storage boundary
+        run: php scripts/check-storage-boundary.php
+      - name: Check PHP formatting
+        run: vendor/bin/pint --test
+      - name: Run database, unit, feature and integration tests
+        run: php artisan test --stop-on-failure
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Lockfile must be regenerated with npm install before npm ci can be enforced.
+      - name: Install frontend dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate TypeScript source and local imports
+        run: npm run check:source
+      - name: Enforce shadcn design-system usage
+        run: npm run check:ui
+      - name: Check design-token and contrast contracts
+        run: npm run check:tokens
+      - name: Verify safe numeric formula evaluation
+        run: npm run check:formula
+      - name: Typecheck the TypeScript UI
+        run: npm run typecheck
+      - name: Production asset build
+        run: npm run build

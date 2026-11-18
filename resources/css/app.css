@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * VOUCH DESIGN SYSTEM v1.0
+ * Single source of truth for theme primitives. HSL channels permit opacity
+ * modifiers in Tailwind. Never paste these palette values into React views.
+ * Document/signature tokens are intentionally theme-independent.
+ */
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Foundations: warm ivory canvas with dark ink and forest-green action */
+    --background: 36 33% 97%;
+    --foreground: 240 7% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 7% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 7% 9%;
+    --surface: 0 0% 100%;
+    --surface-sunken: 38 20% 95%;
+    --surface-hover: 38 15% 93%;
+    --surface-inverse: 240 7% 9%;
+    --surface-inverse-foreground: 0 0% 100%;
+
+    /* Brand and interaction */
+    --primary: 158 60% 16%;
+    --primary-hover: 158 64% 12%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 154 28% 92%;
+    --primary-soft-foreground: 158 58% 17%;
+    --secondary: 36 18% 89%;
+    --secondary-foreground: 240 7% 9%;
+    --muted: 40 14% 92%;
+    --muted-foreground: 220 9% 40%;
+    --accent: 43 46% 61%;
+    --accent-foreground: 240 7% 9%;
+    --accent-soft: 43 42% 91%;
+    --accent-soft-foreground: 38 61% 22%;
+    --border: 35 13% 85%;
+    --input: 35 13% 80%;
+    --ring: 158 60% 26%;
+    --overlay: 240 7% 5%;
+
+    /* Semantic outcomes; 'soft-foreground' is for pale-tinted surfaces. */
+    --success: 151 67% 27%;
+    --success-foreground: 0 0% 100%;
+    --success-soft: 148 38% 92%;
+    --success-soft-foreground: 153 65% 23%;
+    --success-border: 149 40% 73%;
+    --warning: 38 92% 43%;
+    --warning-foreground: 35 30% 10%;
+    --warning-soft: 42 86% 92%;
+    --warning-soft-foreground: 35 78% 24%;
+    --warning-border: 40 64% 68%;
+    --destructive: 0 68% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-soft: 0 80% 95%;
+    --destructive-soft-foreground: 0 65% 36%;
+    --destructive-border: 0 60% 79%;
+    --info: 210 80% 37%;
+    --info-foreground: 0 0% 100%;
+    --info-soft: 210 80% 94%;
+    --info-soft-foreground: 210 80% 32%;
+    --info-border: 211 61% 78%;
+
+    /* Shapes, typography, rhythm, elevation, focus and motion. */
+    --radius: 8px;
+    --radius-control: 8px;
+    --radius-card: 12px;
+    --radius-dialog: 16px;
+    --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-caption: 0.75rem;
+    --font-size-body: 0.875rem;
+    --font-size-section: 1.125rem;
+    --font-size-heading: 1.875rem;
+    --line-height-body: 1.5;
+    --space-control-x: 1rem;
+    --space-control-y: 0.5rem;
+    --space-card: 1.5rem;
+    --space-section: 2rem;
+    --space-page: 2rem;
+    --control-sm: 2rem;
+    --control-md: 2.5rem;
+    --control-lg: 2.75rem;
+    --shadow-soft: 0 2px 16px hsl(240 7% 5% / 0.06);
+    --shadow-elevated: 0 8px 40px hsl(240 7% 5% / 0.10);
+    --shadow-focus: 0 0 0 3px hsl(var(--ring) / 0.24);
+    --motion-fast: 120ms;
+    --motion-base: 180ms;
+    --motion-slow: 280ms;
+    --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+
+    /* Physical PDF paper + signature ink must not invert in dark mode. */
+    --document: 0 0% 100%;
+    --document-foreground: 215 28% 17%;
+    --document-muted: 215 16% 45%;
+    --document-field-stroke: 215 18% 48%;
+    --document-field-blank: 0 0% 100%;
+    --document-field-filled: 0 0% 100%;
+    --signature-ink: 215 28% 17%;
+    --signer-foreground: 0 0% 100%;
+    /* Stable document annotations: distinct signer identities across themes. */
+    --signer-1: 217 73% 35%;
+    --signer-2: 160 72% 26%;
+    --signer-3: 34 85% 29%;
+    --signer-4: 358 72% 40%;
+    --signer-5: 263 65% 42%;
+    --signer-6: 190 90% 28%;
+    --signer-7: 95 61% 25%;
+    --signer-8: 22 86% 34%;
+    --signer-9: 320 63% 37%;
+    --signer-10: 234 62% 39%;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: 240 7% 6%;
+    --foreground: 36 33% 97%;
+    --card: 240 6% 10%;
+    --card-foreground: 36 33% 97%;
+    --popover: 240 6% 10%;
+    --popover-foreground: 36 33% 97%;
+    --surface: 240 6% 10%;
+    --surface-sunken: 240 5% 8%;
+    --surface-hover: 240 5% 17%;
+    --surface-inverse: 36 33% 97%;
+    --surface-inverse-foreground: 240 7% 6%;
+
+    --primary: 154 45% 54%;
+    --primary-hover: 154 50% 45%;
+    --primary-foreground: 240 7% 6%;
+    --primary-soft: 154 22% 18%;
+    --primary-soft-foreground: 154 50% 74%;
+    --secondary: 240 5% 17%;
+    --secondary-foreground: 36 33% 97%;
+    --muted: 240 5% 16%;
+    --muted-foreground: 240 5% 70%;
+    --accent: 43 46% 61%;
+    --accent-foreground: 240 7% 6%;
+    --accent-soft: 43 28% 19%;
+    --accent-soft-foreground: 43 68% 72%;
+    --border: 240 5% 24%;
+    --input: 240 5% 29%;
+    --ring: 154 45% 65%;
+    --overlay: 240 7% 0%;
+
+    --success: 151 55% 63%;
+    --success-foreground: 240 7% 5%;
+    --success-soft: 151 26% 17%;
+    --success-soft-foreground: 151 55% 72%;
+    --success-border: 151 30% 34%;
+    --warning: 38 90% 65%;
+    --warning-foreground: 240 7% 5%;
+    --warning-soft: 38 32% 19%;
+    --warning-soft-foreground: 40 90% 74%;
+    --warning-border: 38 45% 40%;
+    --destructive: 0 70% 67%;
+    --destructive-foreground: 240 7% 5%;
+    --destructive-soft: 0 35% 18%;
+    --destructive-soft-foreground: 0 80% 76%;
+    --destructive-border: 0 44% 37%;
+    --info: 205 85% 70%;
+    --info-foreground: 240 7% 5%;
+    --info-soft: 210 42% 20%;
+    --info-soft-foreground: 205 85% 76%;
+    --info-border: 210 43% 42%;
+
+    --shadow-soft: 0 2px 16px hsl(0 0% 0% / 0.22);
+    --shadow-elevated: 0 8px 40px hsl(0 0% 0% / 0.35);
+    --shadow-focus: 0 0 0 3px hsl(var(--ring) / 0.28);
+  }
+
+  * { @apply border-border; }
+  html { font-family: var(--font-ui); }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    line-height: var(--line-height-body);
+  }
+  ::selection { background: hsl(var(--primary) / 0.20); color: hsl(var(--foreground)); }
+  :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .ui-page { @apply mx-auto w-full max-w-7xl px-4 py-8 md:px-6; }
+  .ui-page-header { @apply mb-6 space-y-1; }
+  .ui-page-title { @apply text-page-title font-semibold tracking-tight text-foreground; }
+  .ui-page-description { @apply text-sm text-muted-foreground; }
+  .ui-section { @apply rounded-card border border-border bg-card p-card shadow-soft; }
+  .ui-subtle-panel { @apply rounded-control border border-border bg-surface-sunken p-4; }
+  .ui-field-label { @apply mb-2 block text-sm font-medium text-foreground; }
+  .ui-field-help { @apply mt-1 text-caption text-muted-foreground; }
+  .ui-field-error { @apply mt-1 text-caption text-destructive-soft-foreground; }
+  .ui-document-paper { @apply bg-document text-document-foreground; }
+}

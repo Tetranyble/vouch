@@ -1,0 +1,161 @@
+# Vouch
+
+Vouch is a multi-tenant document-signing application built with Laravel 12, Inertia, React, and TypeScript. Teams can create document templates, assign signing fields, invite recipients, collect signatures, and securely deliver completed documents.
+
+## Features
+
+- Template builder with PDF and image uploads, signing fields, conditional fields, and multiple signers.
+- Sequential or parallel signing flows, with email and SMS invitations.
+- Drawn, typed, and uploaded signatures; optional email OTP, SMS OTP, KBA, and payment fields.
+- Completed-document delivery, audit trails, expiring download links, and workspace-scoped private storage.
+- Team, account, SMTP, SSO, MFA, notification, storage, API-token, and webhook settings.
+- Sanctum bearer-token API and signed webhook payloads.
+
+## Requirements
+
+- PHP 8.2 or newer with the extensions required by Laravel, GD, ZIP, and your database driver.
+- Composer 2.
+- Node.js 20 or newer and npm.
+- SQLite, MySQL, or PostgreSQL.
+- A queue worker in any environment that sends invitations, reminders, webhooks, or completed documents.
+
+## Local setup
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+npm install
+php artisan migrate --seed
+```
+
+Set your database connection in `.env`, then start the development processes:
+
+```bash
+composer dev
+```
+
+This starts Laravel, Vite, the queue listener, and the log viewer. Alternatively, run `php artisan serve`, `npm run dev`, and `php artisan queue:work` in separate terminals.
+
+The development seeder creates `admin@vouch.test` with password `password`. It is strictly for local use; never deploy seeded development credentials.
+
+### Resetting local data
+
+The following command deletes all local data before recreating the schema and running seeders:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Do not run it against a shared, staging, or production database.
+
+## Configuration
+
+Use `.env.example` as the complete configuration reference. At minimum, production needs:
+
+```dotenv
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://app.example.com
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+MAIL_FROM_ADDRESS=notifications@example.com
+MAIL_FROM_NAME="Vouch"
+
+QUEUE_CONNECTION=database
+STORAGE_DISK=local
+```
+
+Configure `STRIPE_*`, `TWILIO_*`, and `GOOGLE_*` only when those integrations are enabled. Set `TRUSTED_PROXIES` to known reverse-proxy addresses in production; do not trust arbitrary forwarded headers.
+
+Vouch stores document references as private, account-scoped media records. Always use the `DocumentStorage` service for document I/O rather than filesystem paths or public URLs.
+
+## Background processing and scheduler
+
+Queued work delivers invitations, reminders, completion emails, and webhooks. Keep a worker running in production:
+
+```bash
+php artisan queue:work --tries=3
+```
+
+The scheduler sends signing reminders daily at 09:00 and expires overdue submissions hourly. Run it continuously with:
+
+```bash
+php artisan schedule:work
+```
+
+Or invoke `php artisan schedule:run` once per minute from your platform scheduler.
+
+## Email and webhooks
+
+Transactional email is sent through the configured Laravel mailer. The default local mailer is `log`, so it records messages rather than delivering them.
+
+Webhook deliveries include:
+
+- `X-Vouch-Event`
+- `X-Vouch-Signature` — an HMAC-SHA256 digest of the raw JSON payload using the webhook secret.
+- `User-Agent: Vouch-Webhook/1.0`
+
+Verify webhook requests using a timing-safe comparison:
+
+```php
+$signature = hash_hmac('sha256', $payload, $secret);
+hash_equals($signature, $request->header('X-Vouch-Signature'));
+```
+
+## API
+
+The API is available below `/api` and uses Laravel Sanctum bearer tokens:
+
+```http
+Authorization: Bearer YOUR_TOKEN
+Accept: application/json
+```
+
+API tokens are shown only when issued. Store them securely and rotate or revoke them when they are no longer needed.
+
+## Testing and quality checks
+
+```bash
+# Laravel tests
+php artisan test
+
+# Frontend checks: source policy, UI policy, design tokens, formulas, types, build
+npm run check
+
+# PHP style check
+vendor/bin/pint --test
+```
+
+Useful individual checks:
+
+```bash
+npm run typecheck
+npm run build
+node scripts/check-typescript-source.mjs
+php scripts/check-storage-boundary.php
+node scripts/check-shadcn-ui.mjs
+node scripts/check-design-tokens.mjs
+```
+
+## Deployment checklist
+
+1. Provision the database, private document storage, HTTPS, and a worker process.
+2. Set production environment variables, especially `APP_URL`, mail credentials, queue connection, storage, and trusted proxies.
+3. Install immutable dependencies with `composer install --no-dev --optimize-autoloader` and `npm ci`.
+4. Build frontend assets with `npm run build`.
+5. Run migrations with `php artisan migrate --force`.
+6. Cache framework configuration and views with `php artisan optimize`.
+7. Start or restart queue workers and the scheduler.
+8. Run the full test and frontend-check suite in CI before release.
+
+## Documentation
+
+- [Test matrix](docs/TEST_MATRIX.md)
+- [Storage security consolidation](docs/STORAGE_CONSOLIDATION_SECURITY_2026-11-18.md)
+- [TypeScript source policy](docs/TYPESCRIPT_SOURCE_POLICY.md)
+- [Design-system tokens](docs/VOUCH_DESIGN_SYSTEM_TOKENS_2026-11-18.md)
