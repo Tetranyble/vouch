@@ -3,6 +3,11 @@ on:
   pull_request:
   push:
     branches: [main, master]
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   php-tests:
     runs-on: ubuntu-latest
@@ -34,9 +39,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      # Lockfile must be regenerated with npm install before npm ci can be enforced.
+          cache: npm
       - name: Install frontend dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Validate TypeScript source and local imports
         run: npm run check:source
       - name: Enforce shadcn design-system usage
