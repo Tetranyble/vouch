@@ -1,5 +1,7 @@
 # Vouch
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Tetranyble/vouch/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Tetranyble/vouch/tree/main)
+
 <p align="center">
   <img src="docs/assets/pensuh-logo-1024.png" alt="Pensuh logo" width="160">
 </p>
