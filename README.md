@@ -165,3 +165,7 @@ node scripts/check-design-tokens.mjs
 - [Storage security consolidation](docs/STORAGE_CONSOLIDATION_SECURITY_2026-11-18.md)
 - [TypeScript source policy](docs/TYPESCRIPT_SOURCE_POLICY.md)
 - [Design-system tokens](docs/VOUCH_DESIGN_SYSTEM_TOKENS_2026-11-18.md)
+
+## License
+
+Vouch is released under the [MIT License](LICENSE). Copyright © 2026 Pensuh.
