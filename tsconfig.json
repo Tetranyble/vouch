@@ -16,13 +16,12 @@
     "isolatedModules": true,
     "allowJs": false,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "resources/js/*"
+        "./resources/js/*"
       ],
       "ziggy-js": [
-        "vendor/tightenco/ziggy"
+        "./vendor/tightenco/ziggy"
       ]
     },
     "types": [
