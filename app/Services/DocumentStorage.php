@@ -38,7 +38,9 @@ final class DocumentStorage
             MediaUploadOptions::forStandalone(
                 workspaceId: $accountId,
                 userId: $userId,
-                disk: Disk::PRIVATE,
+                // Keep documents private while using the configured private
+                // S3-compatible disk (Cloudflare R2 in this deployment).
+                disk: Disk::S3_PRIVATE,
                 directory: 'vouch/'.preg_replace('/[^a-z0-9_-]/', '-', strtolower($purpose)),
                 module: 'vouch',
                 temporary: false,
