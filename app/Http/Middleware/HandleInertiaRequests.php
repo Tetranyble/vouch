@@ -41,6 +41,11 @@ class HandleInertiaRequests extends Middleware
                     'account_id' => $request->user()->account_id,
                 ] : null,
             ],
+            'contact' => [
+                'support_email' => config('app.contact.support_email'),
+                'privacy_email' => config('app.contact.privacy_email'),
+                'security_email' => config('app.contact.security_email'),
+            ],
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),

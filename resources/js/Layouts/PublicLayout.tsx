@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { AuthUser } from '@/types/vouch';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import VouchEcosystemLinks from '@/Components/VouchEcosystemLinks';
 
 function VouchMark({ dark = false }) {
@@ -16,6 +16,7 @@ function VouchMark({ dark = false }) {
 }
 
 export default function PublicLayout({ children, dark = false, activeLink = '', auth }: { children: ReactNode; dark?: boolean; activeLink?: string; auth?: { user: AuthUser | null } }) {
+    const { contact } = usePage<{ contact: { support_email: string } }>().props;
     const links = [
         { label: 'Home', href: route('home') },
         { label: 'Privacy', href: route('privacy') },
@@ -56,6 +57,7 @@ export default function PublicLayout({ children, dark = false, activeLink = '', 
                                 <VouchEcosystemLinks />
                             </div>
                             <div className="flex gap-5">
+                                <a href={`mailto:${contact.support_email}`} className="hover:text-background transition-colors">Support</a>
                                 <Link href={route('privacy')} className={activeLink === 'Privacy' ? 'text-background' : 'hover:text-background transition-colors'}>Privacy</Link>
                                 <Link href={route('terms')} className={activeLink === 'Terms' ? 'text-background' : 'hover:text-background transition-colors'}>Terms</Link>
                                 <Link href={route('security-page')} className={activeLink === 'Security' ? 'text-background' : 'hover:text-background transition-colors'}>Security</Link>
@@ -99,6 +101,7 @@ export default function PublicLayout({ children, dark = false, activeLink = '', 
                             <VouchEcosystemLinks />
                         </div>
                         <div className="flex gap-5">
+                            <a href={`mailto:${contact.support_email}`} className="hover:text-foreground transition-colors">Support</a>
                             <Link href={route('privacy')} className={activeLink === 'Privacy' ? 'text-foreground font-medium' : 'hover:text-foreground transition-colors'}>Privacy</Link>
                             <Link href={route('terms')} className={activeLink === 'Terms' ? 'text-foreground font-medium' : 'hover:text-foreground transition-colors'}>Terms</Link>
                             <Link href={route('security-page')} className={activeLink === 'Security' ? 'text-foreground font-medium' : 'hover:text-foreground transition-colors'}>Security</Link>

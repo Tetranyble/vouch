@@ -66,15 +66,9 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/privacy', fn () => Inertia::render('Legal/Privacy', [
-    'auth' => ['user' => auth()->user()],
-    'contact' => ['privacy_email' => config('app.contact.privacy_email')],
-]))->name('privacy');
+Route::get('/privacy', fn () => Inertia::render('Legal/Privacy', ['auth' => ['user' => auth()->user()]]))->name('privacy');
 Route::get('/terms', fn () => Inertia::render('Legal/Terms', ['auth' => ['user' => auth()->user()]]))->name('terms');
-Route::get('/security', fn () => Inertia::render('Legal/Security', [
-    'auth' => ['user' => auth()->user()],
-    'contact' => ['security_email' => config('app.contact.security_email')],
-]))->name('security-page');
+Route::get('/security', fn () => Inertia::render('Legal/Security', ['auth' => ['user' => auth()->user()]]))->name('security-page');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

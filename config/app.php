@@ -65,6 +65,7 @@ return [
     */
 
     'contact' => [
+        'support_email' => env('VOUCH_SUPPORT_EMAIL', 'support@pensuh.com'),
         'privacy_email' => env('VOUCH_PRIVACY_EMAIL', 'support@pensuh.com'),
         'security_email' => env('VOUCH_SECURITY_EMAIL', 'support@pensuh.com'),
     ],

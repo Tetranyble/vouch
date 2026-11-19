@@ -24,7 +24,7 @@ function VouchMarkWhite() {
     );
 }
 
-export default function Welcome({ auth }: { auth?: { user: AuthUser | null } }) {
+export default function Welcome({ auth, contact }: { auth?: { user: AuthUser | null }; contact: { support_email: string } }) {
     return (
         <>
             <Head title="Vouch — Secure Document Signing" />
@@ -369,6 +369,7 @@ export default function Welcome({ auth }: { auth?: { user: AuthUser | null } }) 
                                 <VouchEcosystemLinks />
                             </div>
                             <div className="flex gap-5">
+                                <a href={`mailto:${contact.support_email}`} className="hover:text-foreground transition-colors">Support</a>
                                 <Link href={route('privacy')} className="hover:text-foreground transition-colors">Privacy</Link>
                                 <Link href={route('terms')} className="hover:text-foreground transition-colors">Terms</Link>
                                 <Link href={route('security-page')} className="hover:text-foreground transition-colors">Security</Link>

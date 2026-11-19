@@ -191,10 +191,10 @@ function MobileNav({ user, currentPath, onLogout }: { user: AuthenticatedUser; c
 }
 
 type AuthenticatedUser = { id: number; first_name?: string | null; last_name?: string | null; email: string; role?: string };
-type LayoutPageProps = { auth: { user: AuthenticatedUser }; flash?: { success?: string; error?: string } } & Record<string, unknown>;
+type LayoutPageProps = { auth: { user: AuthenticatedUser }; contact: { support_email: string }; flash?: { success?: string; error?: string } } & Record<string, unknown>;
 
 export default function AuthenticatedLayout({ children }: { children: ReactNode; header?: ReactNode }) {
-    const { auth, flash } = usePage<LayoutPageProps>().props;
+    const { auth, contact, flash } = usePage<LayoutPageProps>().props;
     const user = auth.user;
 
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -347,7 +347,10 @@ export default function AuthenticatedLayout({ children }: { children: ReactNode;
             <footer className="border-t bg-card/70 px-4 py-5 md:px-6">
                 <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
                     <p>© 2026 Vouch. Secure document signing.</p>
-                    <VouchEcosystemLinks />
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <a href={`mailto:${contact.support_email}`} className="text-xs hover:text-foreground hover:underline underline-offset-4">Support</a>
+                        <VouchEcosystemLinks />
+                    </div>
                 </div>
             </footer>
         </div>
