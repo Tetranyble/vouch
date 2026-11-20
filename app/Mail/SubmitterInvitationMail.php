@@ -30,6 +30,7 @@ class SubmitterInvitationMail extends Mailable
     {
         return new Content(
             view: 'mail.submitter-invitation',
+            text: 'mail.submitter-invitation-text',
             with: [
                 'submitter' => $this->submitter,
                 'senderName' => $this->senderName,

@@ -31,7 +31,10 @@ class DocumentsCopyMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(view: 'mail.documents-copy');
+        return new Content(
+            view: 'mail.documents-copy',
+            text: 'mail.documents-copy-text',
+        );
     }
 
     public function attachments(): array

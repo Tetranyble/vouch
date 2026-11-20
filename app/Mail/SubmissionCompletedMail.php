@@ -31,6 +31,7 @@ class SubmissionCompletedMail extends Mailable
     {
         return new Content(
             view: 'mail.submission-completed',
+            text: 'mail.submission-completed-text',
             with: [
                 'submission' => $this->submission,
                 'submitter' => $this->submitter,

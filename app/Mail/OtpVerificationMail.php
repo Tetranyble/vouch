@@ -24,6 +24,9 @@ class OtpVerificationMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(view: 'mail.otp-verification');
+        return new Content(
+            view: 'mail.otp-verification',
+            text: 'mail.otp-verification-text',
+        );
     }
 }

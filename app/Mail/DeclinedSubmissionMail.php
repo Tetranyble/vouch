@@ -33,6 +33,9 @@ class DeclinedSubmissionMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(view: 'mail.declined-submission');
+        return new Content(
+            view: 'mail.declined-submission',
+            text: 'mail.declined-submission-text',
+        );
     }
 }

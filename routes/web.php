@@ -53,8 +53,13 @@ use App\Http\Controllers\Public\SubmitFormKbaController;
 use App\Http\Controllers\Public\SubmitFormSms2faController;
 use App\Http\Controllers\Public\SubmitFormStripeController;
 use App\Http\Controllers\Public\SubmitFormValuesController;
+use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('/robots.txt', RobotsController::class)->name('robots');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::get('/', function () {
     if (auth()->check()) {

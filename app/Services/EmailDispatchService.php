@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\SubmissionStatusMail;
 use App\Models\EmailEvent;
 use App\Models\EmailMessage;
 use App\Models\Submission;
@@ -18,7 +19,6 @@ class EmailDispatchService
             $submissionId,
             $email,
             'submission_invite',
-            'You have a document to sign.',
             'Please review and sign your document.'
         );
     }
@@ -29,7 +29,6 @@ class EmailDispatchService
             $submissionId,
             $email,
             'submission_completed',
-            'Your submission is complete.',
             'Your document has been completed.'
         );
     }
@@ -38,7 +37,6 @@ class EmailDispatchService
         string $submissionId,
         string $email,
         string $tag,
-        string $subject,
         string $body
     ): void {
         $submission = Submission::query()->findOrFail($submissionId);
@@ -50,9 +48,10 @@ class EmailDispatchService
                 ->value('id');
         }
 
-        Mail::raw($body, function ($mail) use ($email, $subject) {
-            $mail->to($email)->subject($subject);
-        });
+        $mailable = new SubmissionStatusMail($submission, $tag, $body);
+        $subject = $mailable->envelope()->subject;
+
+        Mail::to($email)->send($mailable);
 
         if (! $authorId) {
             return;
@@ -64,7 +63,7 @@ class EmailDispatchService
             'account_id' => $submission->account_id,
             'subject' => $subject,
             'body' => $body,
-            'sha1' => sha1($subject.$body),
+            'sha1' => sha1($tag.$body),
         ]);
 
         EmailEvent::query()->create([
